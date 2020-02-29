@@ -1,0 +1,19 @@
+.boxes-container {
+    display: flex;
+    justify-content: space-around;
+}
+
+.stage {
+    border: 4px solid #30343f;
+    width: 400px;
+    height: 100px;
+    padding: 20px;
+    font-size: 1.5rem;
+    font-weight: bold;
+    color: white;
+}
+
+.stage.active {
+    background-color: green;
+    color: white;
+}
