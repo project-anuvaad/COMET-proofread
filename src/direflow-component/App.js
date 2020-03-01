@@ -5,6 +5,7 @@ import { store } from './store'
 
 import Proofread from './Proofread'
 import { LOCALSTORAGE_API_ROOT_KEY, LOCALSTORAGE_API_KEY_KEY } from './Proofread/constants';
+import { NotificationContainer } from 'react-notifications';
 
 class App extends React.Component {
 
@@ -23,6 +24,7 @@ class App extends React.Component {
         <Proofread
           {...this.props}
         />
+        <NotificationContainer />
       </Provider>
     )
   }

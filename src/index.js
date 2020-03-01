@@ -9,7 +9,7 @@ const direflowComponent = new DireflowComponent();
 
 const direflowProperties = {
   apiKey: '',
-  apiRoot: '',
+  apiRoot: process.env.NODE_ENV === 'production' ? 'https://api.videowiki.org' : '',
   videoId: '',
   backRoute: '',
   finishRedirectRoute: '',
