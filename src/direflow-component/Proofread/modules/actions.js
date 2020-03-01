@@ -167,7 +167,7 @@ export const convertVideoToArticle = (finishRedirectRoute, videoId, articleId, t
             stages[1].completed = true;
             stages[2].active = true;
             if (finishRedirectRoute) {
-                window.history.href = finishRedirectRoute || '/';
+                window.location.href = finishRedirectRoute || '/';
             } else {
                 window.history.back();
             }
