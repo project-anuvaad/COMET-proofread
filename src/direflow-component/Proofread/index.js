@@ -21,6 +21,7 @@ import styles from './style.scss';
 import FindAndReplaceModal from './components/FindAndReplaceModal';
 
 import { Styled } from 'direflow-component';
+import SlidesList from './components/SlidesList';
 
 class Proofread extends React.Component {
 
@@ -335,15 +336,15 @@ class Proofread extends React.Component {
         <Grid.Row>
             <Grid.Column width={16}>
                 {this.props.article && (
-                    <div style={{ width: '100%', padding: '2rem', color: 'white' }}>
+                    <div style={{ width: '100%', border: '1px dashed gray', padding: '1rem' }}>
                         <h3>Speakers Profiles: </h3>
                         <Grid>
                             {this.props.article.speakersProfile.sort((a, b) => a.speakerNumber - b.speakerNumber).map((speaker, index) => (
-                                <Grid.Row style={{ listStyle: 'none', padding: 10 }} key={'speakers' + index}>
-                                    <Grid.Column width={3}>
+                                <Grid.Row style={{ listStyle: 'none' }} key={'speakers' + index}>
+                                    <Grid.Column width={6}>
                                         <span>Speaker {speaker.speakerNumber}</span>
                                     </Grid.Column>
-                                    <Grid.Column width={3}>
+                                    <Grid.Column width={6}>
                                         <Dropdown
                                             value={speaker.speakerGender}
                                             options={[{ text: 'Male', value: 'male' }, { text: 'Female', value: 'female' }]}
@@ -373,7 +374,7 @@ class Proofread extends React.Component {
 
     renderSpeakersDragAndDrop = () => (
         <Grid.Row style={{ display: 'flex', alignItems: 'flex-start', padding: 0 }}>
-            <Grid.Column width={16} style={{ color: 'white' }}>
+            <Grid.Column width={16} >
                 <Grid>
                     <Grid.Row style={{ display: 'flex', alignItems: 'center' }}>
                         <Grid.Column width={6}>
@@ -527,7 +528,7 @@ class Proofread extends React.Component {
         return (
             <div className="proofreading">
                 <Grid>
-                    <Grid.Row id="top-container" style={{ padding: '5rem', paddingBottom: '1rem' }}>
+                    <Grid.Row id="top-container" >
                         <Grid.Column width={4}>
                             <div>
                                 <a href={backRoute || '/'}>
@@ -536,94 +537,10 @@ class Proofread extends React.Component {
                                     </Button>
                                 </a>
                             </div>
-                            <div style={{ justifyContent: 'flex-start', display: 'flex', alignItems: 'center', color: 'white', padding: '1rem' }} >
-                                <div style={{ display: 'inline-block', marginLeft: '2rem' }}>
-                                    <Switch
-                                        checked={this.props.nameSlides}
-                                        onChange={this.props.setNameSlides}
-                                        onColor="#86d3ff"
-                                        onHandleColor="#2693e6"
-                                        handleDiameter={30}
-                                        uncheckedIcon={false}
-                                        checkedIcon={false}
-                                        boxShadow="0px 1px 5px rgba(0, 0, 0, 0.6)"
-                                        activeBoxShadow="0px 0px 1px 10px rgba(0, 0, 0, 0.2)"
-                                        height={20}
-                                        width={48}
-                                    />
-                                </div>
-                                Name Slides
 
-                            </div>
-
-                            {this.props.nameSlides && this.props.selectedSubtitle && this.props.selectedSubtitle.subtitle && (
-                                <div style={{ marginLeft: 20 }}>
-                                    <SubtitleNameForm
-                                        subtitle={this.props.selectedSubtitle.subtitle}
-                                        onSave={({ name }) => {
-                                            this.onSaveSubtitle(this.props.selectedSubtitle.subtitle, this.props.selectedSubtitle.subtitleIndex, { name })
-                                        }}
-                                    />
-                                </div>
-                            )}
-                            {this.props.article && this.props.article.langCode !== 'en-US' && (
-                                <div style={{ color: 'white', textAlign: 'left', display: 'flex', alignItems: 'center', padding: '1rem' }}>
-
-                                    <div style={{ marginLeft: '2rem', display: 'inline-block' }}>
-                                        <Switch
-                                            checked={this.props.article.toEnglish}
-                                            onChange={this.props.updateToEnglish}
-                                            onColor="#86d3ff"
-                                            onHandleColor="#2693e6"
-                                            handleDiameter={30}
-                                            uncheckedIcon={false}
-                                            checkedIcon={false}
-                                            boxShadow="0px 1px 5px rgba(0, 0, 0, 0.6)"
-                                            activeBoxShadow="0px 0px 1px 10px rgba(0, 0, 0, 0.2)"
-                                            height={20}
-                                            width={48}
-                                        />
-                                    </div>
-
-                                    <span>
-                                        Transcribe directly to English
-                                    </span>
-                                    <Popup
-                                        trigger={<Icon name="info circle" style={{ marginLeft: 10 }} />}
-                                        content="Activate this feature if you are transcribing (adding subtitles) to a local language video directly into English"
-                                    />
-                                </div>
-
-                            )}
                         </Grid.Column>
+                        <Grid.Column width={8} />
 
-                        <Grid.Column width={8}>
-                            <div style={{ width: '100%', height: '100%' }}>
-                                {this.props.video && (
-                                    <ProofreadingVideoPlayer
-                                        width={'100%'}
-                                        duration={this.state.duration}
-                                        currentTime={this.state.currentTime}
-                                        onVideoLoad={this.onVideoLoad}
-                                        playing={this.state.videoPlaying}
-                                        onTimeChange={this.onTimeChange}
-                                        videoRef={(ref) => this.videoRef = ref}
-                                        url={this.props.video.url}
-                                        onPlayToggle={this.onPlayToggle}
-                                        extraContent={
-                                            (
-                                                <p
-                                                    onClick={() => this.setState({ isFindAndReplaceModalVisible: true })}
-                                                    style={{ color: 'white', cursor: 'pointer' }}
-                                                >
-                                                    Find & Replace
-                                                </p>
-                                            )
-                                        }
-                                    />
-                                )}
-                            </div>
-                        </Grid.Column>
                         <Grid.Column width={4}>
                             <Grid>
                                 <Grid.Row>
@@ -631,7 +548,11 @@ class Proofread extends React.Component {
                                         <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
                                             {this.canSaveAndComplete() && (
                                                 <Button color="blue" size="large" circular onClick={() => this.setState({ isConfirmConvertModalVisible: true })} >
-                                                    Save & Complete <Icon name={"arrow right"} />
+                                                    Save & {this.props.video.status === 'proofreading' ? (
+                                                        <span>Complete <Icon name={"arrow right"} /></span>
+                                                    ) : (
+                                                            <span>Send to Proofread <Icon name={"arrow right"} /></span>
+                                                        )}
                                                 </Button>
                                             )}
                                             {this.canMarkAsDone() && (
@@ -642,10 +563,71 @@ class Proofread extends React.Component {
                                             {this.renderConvertConfirmModal()}
                                             {this.renderDoneConfirmModal()}
                                         </div>
+                                        <div style={{ justifyContent: 'flex-end', display: 'flex', alignItems: 'center', color: 'black', paddingTop: '1rem' }} >
+                                           <span style={{ marginRight: 10 }}>
+                                                Name Slides
+                                           </span>
+                                           
+                                            <div style={{ display: 'inline-block' }}>
+                                                <Switch
+                                                    checked={this.props.nameSlides}
+                                                    onChange={this.props.setNameSlides}
+                                                    onColor="#86d3ff"
+                                                    onHandleColor="#2693e6"
+                                                    handleDiameter={30}
+                                                    uncheckedIcon={false}
+                                                    checkedIcon={false}
+                                                    boxShadow="0px 1px 5px rgba(0, 0, 0, 0.6)"
+                                                    activeBoxShadow="0px 0px 1px 10px rgba(0, 0, 0, 0.2)"
+                                                    height={20}
+                                                    width={48}
+                                                />
+                                            </div>
+                                        </div>
+
+                                        {this.props.nameSlides && this.props.selectedSubtitle && this.props.selectedSubtitle.subtitle && (
+                                            <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
+                                                <SubtitleNameForm
+                                                    subtitle={this.props.selectedSubtitle.subtitle}
+                                                    onSave={({ name }) => {
+                                                        this.onSaveSubtitle(this.props.selectedSubtitle.subtitle, this.props.selectedSubtitle.subtitleIndex, { name })
+                                                    }}
+                                                />
+                                            </div>
+                                        )}
+                                        {this.props.article && this.props.article.langCode !== 'en-US' && (
+                                            <div style={{ textAlign: 'left', display: 'flex', alignItems: 'center', justifyContent: 'flex-end' , paddingTop: '1rem' }}>
+
+                                                <span>
+                                                    Transcribe directly to English
+                                                </span>
+                                                <Popup
+                                                    trigger={<Icon name="info circle" style={{ marginLeft: 10 }} />}
+                                                    content="Activate this feature if you are transcribing (adding subtitles) to a local language video directly into English"
+                                                />
+                                                <div style={{ display: 'inline-block' }}>
+                                                    <Switch
+                                                        checked={this.props.article.toEnglish}
+                                                        onChange={this.props.updateToEnglish}
+                                                        onColor="#86d3ff"
+                                                        onHandleColor="#2693e6"
+                                                        handleDiameter={30}
+                                                        uncheckedIcon={false}
+                                                        checkedIcon={false}
+                                                        boxShadow="0px 1px 5px rgba(0, 0, 0, 0.6)"
+                                                        activeBoxShadow="0px 0px 1px 10px rgba(0, 0, 0, 0.2)"
+                                                        height={20}
+                                                        width={48}
+                                                    />
+                                                </div>
+
+                                            </div>
+
+                                        )}
                                     </Grid.Column>
                                 </Grid.Row>
 
-                                <Grid.Row>
+                                {/* <Grid.Row>
                                     <Grid.Column width={16} className="speakers-box-container">
                                         <Grid className="speakers-box">
                                             <h2 style={{ color: 'white' }}>
@@ -654,11 +636,11 @@ class Proofread extends React.Component {
                                             {this.renderSpeakersDragAndDrop()}
                                         </Grid>
                                     </Grid.Column>
-                                </Grid.Row>
+                                </Grid.Row> */}
                             </Grid>
                         </Grid.Column>
                     </Grid.Row>
-                    <Grid.Row>
+                    {/* <Grid.Row>
                         <Grid.Column width={16}>
                             <Grid style={{ display: 'flex', justifyContent: 'center', marginBottom: '.2rem' }}>
                                 <Grid.Row>
@@ -681,58 +663,161 @@ class Proofread extends React.Component {
                                 </Grid.Row>
                             </Grid>
                         </Grid.Column>
-                    </Grid.Row>
+                    </Grid.Row> */}
 
+                    <Grid.Row>
+                        <Grid.Column width={8}>
+                            <div style={{ width: '100%', overflow: 'hidden' }}>
+                                {this.props.video && (
+                                    <div>
+                                        <h3>{this.props.video.title}</h3>
+                                        <ProofreadingVideoPlayer
+                                            width={'100%'}
+                                            inverted
+                                            duration={this.state.duration}
+                                            currentTime={this.state.currentTime}
+                                            onVideoLoad={this.onVideoLoad}
+                                            playing={this.state.videoPlaying}
+                                            onTimeChange={this.onTimeChange}
+                                            videoRef={(ref) => this.videoRef = ref}
+                                            url={this.props.video.url}
+                                            onPlayToggle={this.onPlayToggle}
+                                            extraContent={
+                                                (
+                                                    <p
+                                                        style={{ width: 130 }}
+                                                    >
+                                                    </p>
+                                                )
+                                            }
+                                        />
+                                    </div>
+                                )}
+                            </div>
+                        </Grid.Column>
+                        <Grid.Column width={2} />
+                        <Grid.Column width={6}>
+                            <div>
+                                {this.props.article && this.props.article.speakersProfile && this.props.selectedSubtitle && this.props.selectedSubtitle.subtitle ? (
+                                    <div style={{ width: '100%' }}>
+                                        <SubtitleForm
+                                            title={`Slide ${this.props.selectedSubtitle.subtitleIndex + 1}`}
+                                            loading={this.props.updateSubslideState === 'loading'}
+                                            subtitle={this.props.selectedSubtitle.subtitle}
+                                            speakers={[{ speakerNumber: -1 }].concat(this.props.article.speakersProfile)}
+                                            showTextArea={this.props.selectedSubtitle.subtitle.speakerProfile.speakerNumber !== -1}
+                                            onFindAndReplaceOpen={() => this.setState({ isFindAndReplaceModalVisible: true })}
+                                            onFindAndReplaceSubmit={({ find, replace }) => this.props.findAndReplaceText(find, replace)}
+                                            onSave={(changes) => {
+                                                let { text, speakerNumber, startTime, endTime } = changes;
+                                                if (typeof startTime === 'number' || typeof endTime === 'number') {
+                                                    this.onSaveSubtitle(this.props.selectedSubtitle.subtitle, this.props.selectedSubtitle.subtitleIndex, changes)
+                                                } else {
+
+                                                    let speakerProfile = this.props.article.speakersProfile.find((speaker) => speaker.speakerNumber === speakerNumber);
+                                                    if (speakerNumber !== -1) {
+                                                        speakerProfile = this.props.article.speakersProfile.find((speaker) => speaker.speakerNumber === speakerNumber);
+                                                    } else {
+                                                        speakerProfile = { speakerNumber: -1 };
+                                                        text = ''
+                                                    }
+
+                                                    this.onSaveSubtitle(this.props.selectedSubtitle.subtitle, this.props.selectedSubtitle.subtitleIndex, { text, speakerProfile })
+                                                }
+                                            }}
+                                            onDelete={() => this.onSubslideDelete(this.props.selectedSubtitle.subtitle, this.props.selectedSubtitle.subtitleIndex)}
+                                        />
+                                    </div>
+                                ) : null}
+
+                            </div>
+                            {this.props.article && this.props.video && (
+                                <div>
+                                    <SlidesList
+                                        editable
+                                        slides={this.props.subtitles}
+                                        speakers={[{ speakerNumber: -1 }].concat(this.props.article.speakersProfile)}
+                                        currentSlideIndex={this.props.selectedSubtitle ? this.props.selectedSubtitle.subtitleIndex : null}
+                                        onChange={({ changes }) => {
+                                            let { speakerNumber, startTime, endTime } = changes;
+                                            if (typeof startTime === 'number' || typeof endTime === 'number') {
+                                                this.onSaveSubtitle(this.props.selectedSubtitle.subtitle, this.props.selectedSubtitle.subtitleIndex, changes)
+                                            } else if (typeof speakerNumber === 'number') {
+                                                const { article } = this.props;
+                                                let speakerProfile = article.speakersProfile.find((speaker) => speaker.speakerNumber === speakerNumber);
+                                                if (speakerNumber !== -1) {
+                                                    speakerProfile = article.speakersProfile.find((speaker) => speaker.speakerNumber === speakerNumber);
+                                                } else {
+                                                    speakerProfile = { speakerNumber: -1 };
+                                                }
+                                                this.onSaveSubtitle(this.props.selectedSubtitle.subtitle, this.props.selectedSubtitle.subtitleIndex, { speakerProfile })
+                                            }
+                                        }}
+                                        onDeleteSlide={({ slide, index }) => {
+                                            this.onSubslideDelete(slide, index)
+                                        }}
+                                        onSlideClick={(subtitle, index) => {
+                                            this.props.setSelectedSubtitle(subtitle, index);
+                                            this.onTimeChange(subtitle.startTime)
+                                        }}
+                                    />
+                                    <Grid>
+                                        <Grid.Row>
+                                            <Grid.Column width={16}>
+                                                <Button
+                                                    primary
+                                                    fluid
+                                                    onClick={() => {
+                                                        const { subtitles } = this.props;
+                                                        const { speakersProfile } = this.props.article;
+                                                        const newSlide = {
+                                                            text: '',
+                                                            speakerProfile: speakersProfile[0],
+                                                        }
+                                                        if (subtitles && subtitles.length > 0) {
+                                                            const lastSlide = subtitles[subtitles.length - 1]
+                                                            newSlide.startTime = subtitles[subtitles.length - 1].endTime / 1000
+                                                            newSlide.slidePosition = lastSlide.slidePosition;
+                                                            newSlide.subslidePosition = lastSlide.subslidePosition;
+                                                        } else {
+                                                            newSlide.startTime = 0;
+                                                            newSlide.slidePosition = 0;
+                                                            newSlide.subslidePosition = 0;
+                                                        }
+                                                        newSlide.endTime = newSlide.startTime + 1;
+                                                        this.onAddSubtitle(newSlide)
+                                                    }}
+                                                >
+                                                    Add slide
+                                                </Button>
+                                            </Grid.Column>
+                                        </Grid.Row>
+                                        {this.renderSpeakersProfiles()}
+
+                                    </Grid>
+                                </div>
+                            )}
+                        </Grid.Column>
+
+                    </Grid.Row>
                     <Grid.Row>
                         <Grid.Column width={5} className="speakers-box-container">
                         </Grid.Column>
                         <Grid.Column width={11}>
 
-                            {this.props.article && this.props.article.speakersProfile && this.props.selectedSubtitle && this.props.selectedSubtitle.subtitle ? (
 
-                                <div style={{ width: '100%', padding: '2rem', marginTop: '3rem' }}>
-                                    <SubtitleForm
-                                        loading={this.props.updateSubslideState === 'loading'}
-                                        subtitle={this.props.selectedSubtitle.subtitle}
-                                        speakers={[{ speakerNumber: -1 }].concat(this.props.article.speakersProfile)}
-                                        showTextArea={this.props.selectedSubtitle.subtitle.speakerProfile.speakerNumber !== -1}
-                                        onOpenFindAndReplace={() => this.setState({ isFindAndReplaceModalVisible: true })}
-                                        onFindAndReplaceSubmit={({ find, replace }) => this.props.findAndReplaceText(find, replace)}
-                                        onSave={(changes) => {
-                                            let { text, speakerNumber, startTime, endTime } = changes;
-                                            if (typeof startTime === 'number' || typeof endTime === 'number') {
-                                                this.onSaveSubtitle(this.props.selectedSubtitle.subtitle, this.props.selectedSubtitle.subtitleIndex, changes)
-                                            } else {
-
-                                                let speakerProfile = this.props.article.speakersProfile.find((speaker) => speaker.speakerNumber === speakerNumber);
-                                                if (speakerNumber !== -1) {
-                                                    speakerProfile = this.props.article.speakersProfile.find((speaker) => speaker.speakerNumber === speakerNumber);
-                                                } else {
-                                                    speakerProfile = { speakerNumber: -1 };
-                                                    text = ''
-                                                }
-
-                                                this.onSaveSubtitle(this.props.selectedSubtitle.subtitle, this.props.selectedSubtitle.subtitleIndex, { text, speakerProfile })
-                                            }
-                                        }}
-                                        onDelete={() => this.onSubslideDelete(this.props.selectedSubtitle.subtitle, this.props.selectedSubtitle.subtitleIndex)}
-                                    />
-                                </div>
-                            ) : (
-                                    <div style={{ height: 150 }}></div>
-                                )}
-                            <FindAndReplaceModal
-                                mountNode={document.getElementsByClassName('proofreading')[0]}
-                                open={this.state.isFindAndReplaceModalVisible}
-                                onClose={() => this.setState({ isFindAndReplaceModalVisible: false })}
-                                onSubmit={({ find, replace }) => {
-                                    this.setState({ isFindAndReplaceModalVisible: false });
-                                    this.props.findAndReplaceText(find, replace);
-                                }}
-                            />
                         </Grid.Column>
                     </Grid.Row>
                 </Grid >
+                <FindAndReplaceModal
+                    mountNode={document.getElementsByClassName('proofreading')[0]}
+                    open={this.state.isFindAndReplaceModalVisible}
+                    onClose={() => this.setState({ isFindAndReplaceModalVisible: false })}
+                    onSubmit={({ find, replace }) => {
+                        this.setState({ isFindAndReplaceModalVisible: false });
+                        this.props.findAndReplaceText(find, replace);
+                    }}
+                />
             </div >
         )
     }
@@ -778,7 +863,7 @@ class Proofread extends React.Component {
                 {/* <link rel="stylesheet" href="//cdn.jsdelivr.net/npm/semantic-ui@2.4.2/dist/semantic.min.css" />
                 <link href="https://fonts.googleapis.com/css?family=IBM+Plex+Sans&display=swap" rel="stylesheet"></link> */}
                 {/* <link rel="" href="assets/fonts/proxima_ssv/ProximaNova-Regular.otf" /> */}
-                <div style={{ height: '100%' }}>
+                <div className="proofreading-container">
                     <Grid >
                         <Grid.Row>
                             <Grid.Column width={16}>

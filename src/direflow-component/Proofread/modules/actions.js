@@ -124,6 +124,7 @@ export const fetchVideoById = videoId => dispatch => {
             let activeStageIndex = 0;
             switch (video.status) {
                 case 'proofreading':
+                case 'cutting':
                     stages[0].completed = true;
                     stages[1].active = true;
                     activeStageIndex = 1;
@@ -162,10 +163,17 @@ export const convertVideoToArticle = (finishRedirectRoute, videoId, articleId, t
         .post(Api.video.convertVideo(videoId), { articleId, toEnglish })
         .then(res => {
             console.log(res);
+            const { queued, status } = res.body
             const { stages } = getState()[moduleName].convertStages;
             stages[0].completed = true;
             stages[1].completed = true;
             stages[2].active = true;
+            if (status === 'proofreading') {
+                NotificationService.success('The video has moved to proofreading stage successfully');
+                setTimeout(() => {
+                    window.location.reload();
+                }, 2000);
+            }
             if (finishRedirectRoute) {
                 window.location.href = finishRedirectRoute || '/';
             } else {
@@ -247,6 +255,8 @@ export const setSlidesToSubtitles = (slides) => (dispatch, getState) => {
         if (subtitleIndex !== -1) {
             dispatch(setSelectedSubtitle(subtitles[subtitleIndex], subtitleIndex));
         }
+    } else if (subtitles) {
+        dispatch(setSelectedSubtitle(subtitles[0], 0));
     }
 }
 

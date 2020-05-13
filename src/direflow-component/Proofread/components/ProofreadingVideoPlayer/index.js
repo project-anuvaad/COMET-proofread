@@ -89,13 +89,6 @@ export default class ProofreadingVideoPlayerV2 extends React.Component {
                             </span>
                         </div>
                         <div>
-
-                            {/* <Button
-                            basic
-                            style={{ color: 'white !important', borderColor: 'white', boxShadow: '0 0 0 1px white inset' }}
-                            circular
-                        >
-                        </Button> */}
                             <Icon
                                 circular
                                 className="play-icon"

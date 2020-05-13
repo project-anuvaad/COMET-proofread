@@ -6,9 +6,10 @@
 html, body {
     height: 100%;
     margin: 0;
-    
+    background-color: #ECF5FE;
     font-family: Lato,'Helvetica Neue',Arial,Helvetica,sans-serif;
 }
+
 textarea {
     font-family: Lato,'Helvetica Neue',Arial,Helvetica,sans-serif;
 }
@@ -23,15 +24,14 @@ h1, h2 {
         clear: both;
     }
 }
-
-.proofreading {
-    background-color: #111111;
-    // overflow-y: hidden;
+.proofreading-container, .proofreading {
+    height: 100%;
+    background-color: #ECF5FE;
 }
-
-.proofreading #top-container {
-    padding: 5rem 2rem 1rem 2rem !important;
-
+.proofreading {
+    // background-color: #111111;
+    // overflow-y: hidden;
+    padding: 5rem !important;
 }
 
 #back-btn, #save-btn {

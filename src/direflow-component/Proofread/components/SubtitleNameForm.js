@@ -10,7 +10,7 @@ export default class SubtitleNameForm extends React.Component {
         super(props);
         this.debouncedSave = debounce(() => {
             this.props.onSave({ name: this.state.name });
-        }, 2000)
+        }, 1000)
     }
     
     componentDidMount = () => {
@@ -35,6 +35,7 @@ export default class SubtitleNameForm extends React.Component {
     render() {
         return (
             <Input
+                placeholder="Slide name"
                 value={this.state.name}
                 onChange={(e) => this.setState({ name: e.target.value }, this.onSave)}
             />

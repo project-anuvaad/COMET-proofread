@@ -1,0 +1,17 @@
+.translate-box {
+    margin-bottom: 2rem;
+    .ui.basic.button.translate-box__update-button {
+        box-shadow: none !important;
+        color: #2185d0!important;
+    }
+    &__versions-available {
+        position: absolute;
+        left: 2%;
+        bottom: 5%;
+        cursor: pointer;;
+        .icon {
+            margin-left: 5px;
+            margin-right: 0;;
+        }
+    }
+}
