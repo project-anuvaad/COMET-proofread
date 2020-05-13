@@ -307,7 +307,7 @@ class Proofread extends React.Component {
                     Mark Video as Done
                 </Modal.Header>
                 <Modal.Content>
-                    Are you sure you're done proofreading?
+                    Are you sure you're done {this.props.video.status}?
                 </Modal.Content>
                 <Modal.Actions>
                     <Button onClick={() => this.setState({ isConfirmDoneModalVisible: false })} >Cancel</Button>
@@ -546,7 +546,7 @@ class Proofread extends React.Component {
                                 <Grid.Row>
                                     <Grid.Column width={16}>
                                         <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
-                                            {this.canSaveAndComplete() && (
+                                            {!this.canMarkAsDone()  && this.canSaveAndComplete() && (
                                                 <Button color="blue" size="large" circular onClick={() => this.setState({ isConfirmConvertModalVisible: true })} >
                                                     Save & {this.props.video.status === 'proofreading' ? (
                                                         <span>Complete <Icon name={"arrow right"} /></span>
@@ -626,17 +626,6 @@ class Proofread extends React.Component {
                                         )}
                                     </Grid.Column>
                                 </Grid.Row>
-
-                                {/* <Grid.Row>
-                                    <Grid.Column width={16} className="speakers-box-container">
-                                        <Grid className="speakers-box">
-                                            <h2 style={{ color: 'white' }}>
-                                                Basic tools:
-                                            </h2>
-                                            {this.renderSpeakersDragAndDrop()}
-                                        </Grid>
-                                    </Grid.Column>
-                                </Grid.Row> */}
                             </Grid>
                         </Grid.Column>
                     </Grid.Row>
@@ -698,7 +687,7 @@ class Proofread extends React.Component {
                         <Grid.Column width={2} />
                         <Grid.Column width={6}>
                             <div>
-                                {this.props.article && this.props.article.speakersProfile && this.props.selectedSubtitle && this.props.selectedSubtitle.subtitle ? (
+                                {this.props.video && this.props.video.status === 'proofreading' && this.props.article && this.props.article.speakersProfile && this.props.selectedSubtitle && this.props.selectedSubtitle.subtitle ? (
                                     <div style={{ width: '100%' }}>
                                         <SubtitleForm
                                             title={`Slide ${this.props.selectedSubtitle.subtitleIndex + 1}`}
