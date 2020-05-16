@@ -45,6 +45,7 @@ const INITIAL_STATE = {
         subtitle: null,
         subtitleIndex: null,
     },
+    transcriptionVersions: [],
     toEnglish: false,
     nameSlides: false,
 }
@@ -76,7 +77,6 @@ export default function (state = INITIAL_STATE, action) {
         case actionTypes.SET_UPLOAD_VIDEO_FORM:
             return { ...state, uploadVideoForm: action.payload };
         case actionTypes.RESET_UPLOAD_VIDEO_FORM:
-            console.log('reset upload video form', INITIAL_STATE.uploadVideoForm)
             return { ...state, uploadVideoForm: { ...INITIAL_STATE.uploadVideoForm } };
         case actionTypes.FETCH_ARTICLE_LOADING:
             return { ...state, fetchArticleState: 'loading', fetchArticleError: '', article: null };
@@ -84,6 +84,8 @@ export default function (state = INITIAL_STATE, action) {
             return { ...state, fetchArticleState: 'failed', fetchArticleError: action.payload };
         case actionTypes.FETCH_ARTICLE_SUCCESS:
             return { ...state, fetchArticleState: 'done', article: action.payload };
+        case actionTypes.SET_TRANSCRIPTION_VERSIONS:
+            return { ...state, transcriptionVersions: action.payload };
         case actionTypes.UPDATE_SUBSLIDE_LOADING:
             return { ...state, updateSubslideState: 'loading' };
         case actionTypes.UPDATE_SUBSLIDE_FAILED:

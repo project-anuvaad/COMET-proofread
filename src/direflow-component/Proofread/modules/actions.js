@@ -163,7 +163,7 @@ export const convertVideoToArticle = (finishRedirectRoute, videoId, articleId, t
         .post(Api.video.convertVideo(videoId), { articleId, toEnglish })
         .then(res => {
             console.log(res);
-            const { queued, status } = res.body
+            const { status } = res.body
             const { stages } = getState()[moduleName].convertStages;
             stages[0].completed = true;
             stages[1].completed = true;
@@ -193,7 +193,7 @@ export const convertVideoToArticle = (finishRedirectRoute, videoId, articleId, t
 export const markVideoAsDone = (videoId, articleId) => (dispatch, getState) => {
     requestAgent
         .put(Api.article.markVideoAsDone(articleId), { reviewCompleted: true })
-        .then((res) => {
+        .then(() => {
             const article = { ...getState()[moduleName].article };
             article.reviewCompleted = true;
             NotificationService.success('Marked as done successfully');
@@ -209,7 +209,7 @@ export const updateToEnglish = (toEnglish) => (dispatch, getState) => {
     const article = { ...getState()[moduleName].article };
     requestAgent
         .put(Api.article.updateToEnglish(article._id), { toEnglish })
-        .then((res) => {
+        .then(() => {
             article.toEnglish = toEnglish;
             dispatch(setArticle(article));
         })
@@ -234,6 +234,60 @@ export const fetchArticleByVideoId = videoId => dispatch => {
         })
 }
 
+const setTranscriptionVersions = articles => ({
+    type: actionTypes.SET_TRANSCRIPTION_VERSIONS,
+    payload: articles,
+})
+
+export const fetchTranscriptionVersions = (videoId) => dispatch => {
+    requestAgent
+        .get(Api.article.getTranscriptionVersions(videoId))
+        .then((res) => {
+            const { articles } = res.body;
+            dispatch(setTranscriptionVersions(articles))
+        })
+        .catch(err => {
+            const reason = err.response && err.response.text ? err.response.text : 'Something went wrong';
+            NotificationService.error(reason)
+            dispatch(fetchArticleFailed(reason));
+        })
+}
+
+export const setTranscriptionVersionForSubslide = ({ articleId, slidePosition, subslidePosition, transcriptionVersionArticleId }) => (dispatch, getState) => {
+    console.log('params are', articleId, slidePosition, subslidePosition, transcriptionVersionArticleId)
+    requestAgent
+    .post(Api.article.setTranscriptionVersionForSubslide(articleId), { slidePosition, subslidePosition, transcriptionVersionArticleId })
+    .then(({ body }) => {
+        console.log(body)
+        const { subslide } = body;
+        const { article } = getState()[moduleName]
+        const slideIndex = article.slides.findIndex((s) => s.position === slidePosition);
+        const subslideIndex = article.slides[slideIndex].content.findIndex((s) => s.position === subslidePosition);
+        const changes = {}
+        Object.keys(subslide).forEach(key => {
+            article.slides[slideIndex].content[subslideIndex][key] = subslide[key];    
+            changes[key] = subslide[key];
+        })
+        dispatch(setArticle({ ...article }));
+        dispatch(setSlidesToSubtitles(article.slides.slice()))
+    })
+    .catch(err => {
+        console.log(err);
+        NotificationService.responseError(err);
+    })
+}
+
+export const setTranscriptionVersionForAllSubslides = ({ articleId,  transcriptionVersionArticleId }) => () => {
+    requestAgent
+    .post(Api.article.setTranscriptionVersionForAllSubslides(articleId), { transcriptionVersionArticleId })
+    .then(() => {
+      window.location.reload()
+    })
+    .catch(err => {
+        console.log(err);
+        NotificationService.responseError(err);
+    })
+}
 const updateSubslideLoading = () => ({
     type: actionTypes.UPDATE_SUBSLIDE_LOADING,
 })
@@ -377,7 +431,7 @@ export const updateSpeakers = speakersProfile => (dispatch, getState) => {
     const article = { ...getState()[moduleName].article };
     requestAgent
         .put(Api.article.updateSpeakers(article._id), { speakersProfile })
-        .then((res) => {
+        .then(() => {
             article.speakersProfile = speakersProfile;
             dispatch(setArticle(article));
         })
@@ -393,7 +447,7 @@ export const findAndReplaceText = (find, replace) => (dispatch, getState) => {
 
     requestAgent
         .post(Api.article.findAndReplaceText(article._id), { find, replace })
-        .then((res) => {
+        .then(() => {
             dispatch(fetchArticleByVideoId(article.video))
         })
         .catch((err) => {

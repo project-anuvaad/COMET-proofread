@@ -22,6 +22,7 @@ import FindAndReplaceModal from './components/FindAndReplaceModal';
 
 import { Styled } from 'direflow-component';
 import SlidesList from './components/SlidesList';
+import TranscriptionVersionSelectModal from './components/TranscriptionVersionSelectModal';
 
 class Proofread extends React.Component {
 
@@ -39,6 +40,7 @@ class Proofread extends React.Component {
         isConfirmConvertModalVisible: false,
         isConfirmDoneModalVisible: false,
         isFindAndReplaceModalVisible: false,
+        isTranscriptionVersionModalVisible: false,
     }
 
 
@@ -49,6 +51,8 @@ class Proofread extends React.Component {
         this.props.fetchUserData()
         this.props.fetchOrganizationData(this.props.apiKey)
         this.props.fetchArticleByVideoId(this.props.videoId);
+        this.props.fetchTranscriptionVersions(this.props.videoId);
+
         this.props.setToEnglish(false);
     }
 
@@ -281,6 +285,24 @@ class Proofread extends React.Component {
     onMarkVideoAsDone = () => {
         this.setState({ isConfirmDoneModalVisible: false });
         this.props.markVideoAsDone(this.props.video._id, this.props.article._id)
+    }
+
+    getVersionedSubslides = () => {
+        const { transcriptionVersions, selectedSubtitle } = this.props;
+        if (!selectedSubtitle || !selectedSubtitle.subtitle) return [];
+        const { subtitle } = this.props.selectedSubtitle;
+
+        if (!subtitle || !transcriptionVersions) return [];
+        const slidePosition = subtitle.slidePosition;
+        const subslidePosition = subtitle.subslidePosition;
+        const subslides = [];
+        transcriptionVersions.forEach(article => {
+            const vsubslide = article.slides.find(s => s.position === slidePosition).content.find(s => s.position === subslidePosition);
+            vsubslide.articleId = article._id;
+            vsubslide.isAITranscription = article.isAITranscription;
+            subslides.push(vsubslide);
+        });
+        return subslides;
     }
 
     renderConvertConfirmModal = () => {
@@ -522,9 +544,17 @@ class Proofread extends React.Component {
     )
 
     renderProofreading = () => {
-        const { article, backRoute } = this.props
+        const { article, backRoute, selectedSubtitle } = this.props
         if (!article) return;
 
+        const versionedSubslides = this.getVersionedSubslides();
+        let slideTitle = `Slide ${this.props.selectedSubtitle.subtitleIndex + 1}`;
+        if (versionedSubslides && versionedSubslides.length > 0 && selectedSubtitle && selectedSubtitle.subtitle) {
+            const selectedVersion = versionedSubslides.findIndex(vs => vs.articleId === selectedSubtitle.subtitle.translationVersionArticleId);
+            if (selectedVersion !== -1) {
+                slideTitle = <span>Slide {this.props.selectedSubtitle.subtitleIndex + 1} -<small> Translator {selectedVersion + 1}</small> </span>;
+            }
+        }
         return (
             <div className="proofreading">
                 <Grid>
@@ -546,7 +576,7 @@ class Proofread extends React.Component {
                                 <Grid.Row>
                                     <Grid.Column width={16}>
                                         <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
-                                            {!this.canMarkAsDone()  && this.canSaveAndComplete() && (
+                                            {!this.canMarkAsDone() && this.canSaveAndComplete() && (
                                                 <Button color="blue" size="large" circular onClick={() => this.setState({ isConfirmConvertModalVisible: true })} >
                                                     Save & {this.props.video.status === 'proofreading' ? (
                                                         <span>Complete <Icon name={"arrow right"} /></span>
@@ -564,10 +594,10 @@ class Proofread extends React.Component {
                                             {this.renderDoneConfirmModal()}
                                         </div>
                                         <div style={{ justifyContent: 'flex-end', display: 'flex', alignItems: 'center', color: 'black', paddingTop: '1rem' }} >
-                                           <span style={{ marginRight: 10 }}>
+                                            <span style={{ marginRight: 10 }}>
                                                 Name Slides
                                            </span>
-                                           
+
                                             <div style={{ display: 'inline-block' }}>
                                                 <Switch
                                                     checked={this.props.nameSlides}
@@ -596,7 +626,7 @@ class Proofread extends React.Component {
                                             </div>
                                         )}
                                         {this.props.article && this.props.article.langCode !== 'en-US' && (
-                                            <div style={{ textAlign: 'left', display: 'flex', alignItems: 'center', justifyContent: 'flex-end' , paddingTop: '1rem' }}>
+                                            <div style={{ textAlign: 'left', display: 'flex', alignItems: 'center', justifyContent: 'flex-end', paddingTop: '1rem' }}>
 
                                                 <span>
                                                     Transcribe directly to English
@@ -690,11 +720,13 @@ class Proofread extends React.Component {
                                 {this.props.video && this.props.video.status === 'proofreading' && this.props.article && this.props.article.speakersProfile && this.props.selectedSubtitle && this.props.selectedSubtitle.subtitle ? (
                                     <div style={{ width: '100%' }}>
                                         <SubtitleForm
-                                            title={`Slide ${this.props.selectedSubtitle.subtitleIndex + 1}`}
+                                            title={slideTitle}
                                             loading={this.props.updateSubslideState === 'loading'}
+                                            transcriptionVersionsCount={this.props.transcriptionVersions.length}
                                             subtitle={this.props.selectedSubtitle.subtitle}
                                             speakers={[{ speakerNumber: -1 }].concat(this.props.article.speakersProfile)}
                                             showTextArea={this.props.selectedSubtitle.subtitle.speakerProfile.speakerNumber !== -1}
+                                            onOpenTranslationVersions={() => this.setState({ isTranscriptionVersionModalVisible: true })}
                                             onFindAndReplaceOpen={() => this.setState({ isFindAndReplaceModalVisible: true })}
                                             onFindAndReplaceSubmit={({ find, replace }) => this.props.findAndReplaceText(find, replace)}
                                             onSave={(changes) => {
@@ -787,15 +819,6 @@ class Proofread extends React.Component {
                                 </div>
                             )}
                         </Grid.Column>
-
-                    </Grid.Row>
-                    <Grid.Row>
-                        <Grid.Column width={5} className="speakers-box-container">
-                        </Grid.Column>
-                        <Grid.Column width={11}>
-
-
-                        </Grid.Column>
                     </Grid.Row>
                 </Grid >
                 <FindAndReplaceModal
@@ -807,6 +830,24 @@ class Proofread extends React.Component {
                         this.props.findAndReplaceText(find, replace);
                     }}
                 />
+                {this.props.selectedSubtitle && (
+                    <TranscriptionVersionSelectModal
+                        open={this.state.isTranscriptionVersionModalVisible}
+                        subslide={this.props.selectedSubtitle.subtitle}
+                        transcriptionVersions={this.props.transcriptionVersions}
+                        versionedSubslides={versionedSubslides}
+
+                        onClose={() => this.setState({ isTranscriptionVersionModalVisible: false })}
+                        onVersionChange={(transcriptionVersionArticleId) => {
+                            this.setState({ isTranscriptionVersionModalVisible: false });
+                            this.props.setTranscriptionVersionForSubslide({ articleId: this.props.article._id, slidePosition: this.props.selectedSubtitle.subtitle.slidePosition, subslidePosition: this.props.selectedSubtitle.subtitle.subslidePosition, transcriptionVersionArticleId })
+                        }}
+                        onSetVersionOnAllSlides={(transcriptionVersionArticleId) => {
+                            this.setState({ isTranscriptionVersionModalVisible: false });
+                            this.props.setTranscriptionVersionForAllSubslides({ articleId: this.props.article._id, transcriptionVersionArticleId })
+                        }}
+                    />
+                )}
             </div >
         )
     }
@@ -880,6 +921,7 @@ const mapStateToProps = ({ proofread }) => ({
     nameSlides: proofread.nameSlides,
     user: proofread.user,
     organization: proofread.organization,
+    transcriptionVersions: proofread.transcriptionVersions,
 })
 
 const mapDispatchToProps = (dispatch) => ({
@@ -893,6 +935,10 @@ const mapDispatchToProps = (dispatch) => ({
 
     setNameSlides: (nameSlides) => dispatch(actions.setNameSlides(nameSlides)),
     fetchArticleByVideoId: id => dispatch(actions.fetchArticleByVideoId(id)),
+    fetchTranscriptionVersions: id => dispatch(actions.fetchTranscriptionVersions(id)),
+    setTranscriptionVersionForSubslide: params => dispatch(actions.setTranscriptionVersionForSubslide(params)),
+    setTranscriptionVersionForAllSubslides: (params) => dispatch(actions.setTranscriptionVersionForAllSubslides(params)),
+    
     updateSubslide: (slidePosition, subslidePosition, changes) => dispatch(actions.updateSubslide(slidePosition, subslidePosition, changes)),
     onSplitSubslide: (slidePosition, subslidePosition, wordIndex, currentTime) => dispatch(actions.splitSubslide(slidePosition, subslidePosition, wordIndex, currentTime)),
     addSubslide: subslide => dispatch(actions.addSubslide(subslide)),

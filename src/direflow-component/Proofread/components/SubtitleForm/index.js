@@ -110,7 +110,7 @@ export default class SubtitleForm extends React.Component {
                             }
                             content="Find and replace text"
                         />
-                        <Label className="translate-box__versions-available">{this.props.translationVersionsCount || 0} versions available <Icon name="chevron down" /></Label>
+                        <Label onClick={this.props.onOpenTranslationVersions} className="translate-box__versions-available">{this.props.transcriptionVersionsCount || 0} versions available <Icon name="chevron down" /></Label>
                         <TextArea
                             style={{ padding: 20, paddingRight: 40, width: '100%', border: 'none' }}
                             rows={6}
