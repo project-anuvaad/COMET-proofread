@@ -369,10 +369,34 @@ class Proofread extends React.Component {
                         <div style={{ width: '100%', border: '1px dashed gray', padding: '1rem' }}>
                             <h3>Speakers Profiles: </h3>
                             <Grid>
+                                <Grid.Row>
+                                    <Grid.Column width={4}>
+                                        <div style={{ display: 'flex', justifyContent: 'flex-start', alignItems: 'center' }}>
+
+                                            <span>
+                                                Intro/Extro/Music
+                                            </span>
+                                        </div>
+                                    </Grid.Column>
+                                    <Grid.Column width={4}>
+
+                                        <div style={{ marginLeft: 10 }}>
+                                            <SpeakerDragItem speaker={{ speakerNumber: -1 }} />
+                                        </div>
+                                    </Grid.Column>
+                                </Grid.Row>
                                 {this.props.article.speakersProfile.sort((a, b) => a.speakerNumber - b.speakerNumber).map((speaker, index) => (
                                     <Grid.Row style={{ listStyle: 'none' }} key={'speakers' + index}>
-                                        <Grid.Column width={6}>
-                                            <span>Speaker {speaker.speakerNumber}</span>
+                                        <Grid.Column width={4}>
+                                            <div style={{ display: 'flex', justifyContent: 'flex-strt', alignItems: 'center' }}>
+                                                <span>Speaker {speaker.speakerNumber}</span>
+                                            </div>
+                                        </Grid.Column>
+                                        <Grid.Column width={4}>
+
+                                            <div style={{ marginLeft: 10 }}>
+                                                <SpeakerDragItem speaker={{ speakerNumber: speaker.speakerNumber }} />
+                                            </div>
                                         </Grid.Column>
                                         <Grid.Column width={6}>
                                             <Dropdown
@@ -791,7 +815,9 @@ class Proofread extends React.Component {
                                         }}
                                         onSlideClick={(subtitle, index) => {
                                             this.props.setSelectedSubtitle(subtitle, index);
-                                            this.onTimeChange(subtitle.startTime)
+                                            setTimeout(() => {
+                                                this.onTimeChange(subtitle.startTime)
+                                            }, 0);
                                         }}
                                     />
 

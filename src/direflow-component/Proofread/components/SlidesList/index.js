@@ -27,7 +27,9 @@ class SlidesList extends React.Component {
     return (
       <Grid.Row
         key={`slide-list-${index}`}
-        onClick={() => this.props.onSlideClick(slide, index)}
+        onClick={(e) => {
+          this.props.onSlideClick(slide, index)
+        }}
       >
         <Grid.Column width={16}>
           <Slide

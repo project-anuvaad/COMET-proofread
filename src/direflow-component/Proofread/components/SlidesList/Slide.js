@@ -4,6 +4,7 @@ import PropTypes from 'prop-types'
 import classnames from 'classnames';
 import { Icon, Input, Button, Dropdown } from 'semantic-ui-react';
 import { formatTime, unformatTime, isTimeFormatValid } from '../../utils/helpers';
+import { SPEAKER_BACKGROUND_COLORS } from '../../constants';
 
 export default class Slide extends React.Component {
     state = {
@@ -46,13 +47,15 @@ export default class Slide extends React.Component {
 
     render() {
         const { slide, index, active, editable, speakers } = this.props;
+        
         return (
             <div
+                style={{ borderColor: SPEAKER_BACKGROUND_COLORS[slide.speakerProfile.speakerNumber ]}}
                 className={classnames({ "slide-item": true, active })}
             >
                 <span>
                     Slide {index + 1} - {!editable ? (
-                        <small>Speaker {slide.speakerProfile.speakerNumber}</small>
+                        <small>{slide.speakerProfile.speakerNumber === -1 ? 'Intro/Extro/Music' : `Speaker ${slide.speakerProfile.speakerNumber}`}</small>
                     ) : (
                             <Dropdown
                                 options={speakers.map(s => ({ value: s.speakerNumber, text: s.speakerNumber === -1 ? 'Intro/Extro/Music' : `Speaker ${s.speakerNumber} (${s.speakerGender})`, key: `Speaker-option-${s.speakerNumber}` }))}
