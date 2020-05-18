@@ -48,19 +48,24 @@ class SlidesList extends React.Component {
   render() {
     return (
       <Styled styles={styles}>
-        <Grid className="slides-container">
-          {this.props.slides.map((slide, index) => this.renderSlide(slide, index))}
-          <Modal open={this.state.isDeleteModalVisible} size="tiny" onClose={() => this.setState({ isDeleteModalVisible: false })}>
-            <Modal.Header>Delete Subtitle</Modal.Header>
-            <Modal.Content>
-              Are you sure you want to delete this item?
+        <div>
+          <Grid className="slides-container">
+            {this.props.slides.map((slide, index) => this.renderSlide(slide, index))}
+            <Modal open={this.state.isDeleteModalVisible} size="tiny" onClose={() => this.setState({ isDeleteModalVisible: false })}>
+              <Modal.Header>Delete Subtitle</Modal.Header>
+              <Modal.Content>
+                Are you sure you want to delete this item?
             </Modal.Content>
-            <Modal.Actions>
-              <Button onClick={() => this.setState({ isDeleteModalVisible: false })}>Cancel</Button>
-              <Button color="red" onClick={() => { this.setState({ isDeleteModalVisible: false }); this.props.onDeleteSlide({ slide: this.state.selectedSlide, index: this.state.selectedSlideIndex }) }}>Yes</Button>
-            </Modal.Actions>
-          </Modal>
-        </Grid>
+              <Modal.Actions>
+                <Button onClick={() => this.setState({ isDeleteModalVisible: false })}>Cancel</Button>
+                <Button color="red" onClick={() => { this.setState({ isDeleteModalVisible: false }); this.props.onDeleteSlide({ slide: this.state.selectedSlide, index: this.state.selectedSlideIndex }) }}>Yes</Button>
+              </Modal.Actions>
+            </Modal>
+          </Grid>
+          <div className="note">
+            <small >Note: Timing is in <strong>MM:SS</strong> format</small>
+          </div>
+        </div>
       </Styled>
     )
   }
