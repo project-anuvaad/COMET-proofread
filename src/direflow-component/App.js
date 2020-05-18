@@ -1,6 +1,5 @@
 import React from 'react'
 import { Provider } from 'react-redux'
-import "react-loader-spinner/dist/loader/css/react-spinner-loader.css"
 
 import { store } from './store'
 
