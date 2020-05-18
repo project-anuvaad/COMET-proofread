@@ -221,11 +221,34 @@ export const updateToEnglish = (toEnglish) => (dispatch, getState) => {
 
 export const fetchArticleByVideoId = videoId => dispatch => {
     dispatch(fetchArticleLoading());
+    let article;
     requestAgent
         .get(Api.article.getbyVideoId(videoId))
         .then((res) => {
-            const article = res.body;
+            article = res.body;
+            return requestAgent.get(Api.video.getVideoById(article.video))
+        })
+        .then(res => {
+            const video = res.body;
+            if (video.status === 'proofreading') {
+                const newSlides = [];
+                article.slides.forEach(slide => {
+                    const content = [];
+                    slide.content.forEach(subslide => {
+                        if (subslide.speakerProfile && subslide.speakerProfile.speakerNumber !== -1) {
+                            content.push(subslide);
+                        }
+                    })
+                    newSlides.push({
+                        ...slide,
+                        content,
+                    })
+                })
+                article.slides = newSlides;
+            }
+
             dispatch(fetchArticleSuccess(article));
+
         })
         .catch(err => {
             const reason = err.response && err.response.text ? err.response.text : 'Something went wrong';

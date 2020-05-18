@@ -1,11 +1,27 @@
 import React from 'react';
 import { Modal, Label, Icon, Button, Dropdown } from 'semantic-ui-react';
+import Lottie from 'react-lottie';
+import robotLottie from './robot.json'
 
 class TranscriptionVersionSelectModal extends React.Component {
     state = {
         selectedTranscribeAllIndex: null,
     }
     
+    renderLoader = () => {
+        const defaultOptions = {
+            loop: false,
+            autoplay: true,
+            animationData: robotLottie,
+            rendererSettings: {
+                preserveAspectRatio: 'xMidYMid slice'
+            }
+        };
+        return (
+            <Lottie options={defaultOptions} height={100} width={100} />
+        )
+    }
+
     render() {
         const { open, onClose, subslide, versionedSubslides, onVersionChange, transcriptionVersions } = this.props;
         if (!open) return null;
@@ -39,6 +55,7 @@ class TranscriptionVersionSelectModal extends React.Component {
                                     const notCurrentVersion = !subslide.transcriptionVersionArticleId || (subslide.transcriptionVersionArticleId !== versionedSubslide.articleId);
                                     const bgColor = notCurrentVersion ? '#d4e0ed' : '#1d3348';
                                     const color = notCurrentVersion ? 'rgba(0,0,0,.6)' : 'white';
+                                    const loading = versionedSubslide.AITranscriptionLoading;
 
                                     return (
                                         <div key={`versioned-subslide-${index}`} style={{ marginBottom: '2rem' }}>
@@ -54,11 +71,12 @@ class TranscriptionVersionSelectModal extends React.Component {
                                                 >
                                                     {versionedSubslide.isAITranscription ? (<span>AI Transcription</span>) : `Translator ${index + 1} `}
                                                 </Label>
+
                                                 
                                                 {notCurrentVersion ? (
                                                     <div style={{ color: '#0e7ceb', cursor: 'pointer' }} onClick={() => onVersionChange(versionedSubslide.articleId)}>
                                                         Use this version
-                                        </div>
+                                                    </div>
                                                 ) : (
                                                         <span>
                                                             <Icon name="check circle" color="green" />
@@ -67,7 +85,14 @@ class TranscriptionVersionSelectModal extends React.Component {
                                                 }
                                             </div>
                                             <div style={{ padding: '1rem', border: `solid 1px ${bgColor}` }}>
-                                                {versionedSubslide.text}
+                                                {loading ? (
+                                                    <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', flexDirection: 'column' }}>
+                                                        {this.renderLoader()}
+                                                        <span>Working on it...</span>
+                                                    </div>
+                                                ) : (
+                                                        <span>{versionedSubslide.text}</span>
+                                                    )}
                                             </div>
                                         </div>
                                     )
