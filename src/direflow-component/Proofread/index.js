@@ -248,6 +248,10 @@ class Proofread extends React.Component {
         return false;
     }
 
+    isEditable = () => {
+        return this.props.video && this.props.video.status === 'cutting'
+    }
+
     getVideoStatus = () => {
         if (this.props.video && this.props.video.status) return this.props.video.status;
         return null;
@@ -323,6 +327,7 @@ class Proofread extends React.Component {
     }
 
     renderDoneConfirmModal = () => {
+        if (!this.props.video) return null;
         return (
             <Modal open={this.state.isConfirmDoneModalVisible} onClose={() => this.setState({ isConfirmDoneModalVisible: false })} size="tiny">
                 <Modal.Header>
@@ -354,45 +359,52 @@ class Proofread extends React.Component {
         );
     }
 
-    renderSpeakersProfiles = () => (
-        <Grid.Row>
-            <Grid.Column width={16}>
-                {this.props.article && (
-                    <div style={{ width: '100%', border: '1px dashed gray', padding: '1rem' }}>
-                        <h3>Speakers Profiles: </h3>
-                        <Grid>
-                            {this.props.article.speakersProfile.sort((a, b) => a.speakerNumber - b.speakerNumber).map((speaker, index) => (
-                                <Grid.Row style={{ listStyle: 'none' }} key={'speakers' + index}>
-                                    <Grid.Column width={6}>
-                                        <span>Speaker {speaker.speakerNumber}</span>
-                                    </Grid.Column>
-                                    <Grid.Column width={6}>
-                                        <Dropdown
-                                            value={speaker.speakerGender}
-                                            options={[{ text: 'Male', value: 'male' }, { text: 'Female', value: 'female' }]}
-                                            onChange={(e, { value }) => this.onSpeakerGenderChange(speaker, value)}
-                                        />
-                                    </Grid.Column>
+    renderSpeakersProfiles = () => {
+        const isEditable = this.isEditable();
+
+        return (
+            <Grid.Row>
+                <Grid.Column width={16}>
+                    {this.props.article && (
+                        <div style={{ width: '100%', border: '1px dashed gray', padding: '1rem' }}>
+                            <h3>Speakers Profiles: </h3>
+                            <Grid>
+                                {this.props.article.speakersProfile.sort((a, b) => a.speakerNumber - b.speakerNumber).map((speaker, index) => (
+                                    <Grid.Row style={{ listStyle: 'none' }} key={'speakers' + index}>
+                                        <Grid.Column width={6}>
+                                            <span>Speaker {speaker.speakerNumber}</span>
+                                        </Grid.Column>
+                                        <Grid.Column width={6}>
+                                            <Dropdown
+                                                disabled={!isEditable}
+                                                value={speaker.speakerGender}
+                                                options={[{ text: 'Male', value: 'male' }, { text: 'Female', value: 'female' }]}
+                                                onChange={(e, { value }) => this.onSpeakerGenderChange(speaker, value)}
+                                            />
+                                        </Grid.Column>
 
 
-                                    <Grid.Column width={2}>
-                                        {index === this.props.article.speakersProfile.length - 1 && (
-                                            <Button color="red" onClick={() => this.onDeleteSpeaker(index)} icon="trash" size="tiny" />
-                                        )}
-                                    </Grid.Column>
-                                </Grid.Row>
-                            ))}
-                            <Grid.Row>
-                                <Grid.Column style={{ display: 'flex', justifyContent: 'flex-start' }}>
-                                    <Button color="blue" onClick={this.onAddSpeaker} >Add Speaker</Button>
-                                </Grid.Column>
-                            </Grid.Row>
-                        </Grid>
-                    </div>
-                )}
-            </Grid.Column>
-        </Grid.Row>
-    )
+                                        <Grid.Column width={2}>
+                                            {isEditable && index === this.props.article.speakersProfile.length - 1 && (
+                                                <Button color="red" onClick={() => this.onDeleteSpeaker(index)} icon="trash" size="tiny" />
+                                            )}
+                                        </Grid.Column>
+                                    </Grid.Row>
+                                ))}
+                                {isEditable && (
+                                    <Grid.Row>
+                                        <Grid.Column style={{ display: 'flex', justifyContent: 'flex-start' }}>
+                                            <Button color="blue" onClick={this.onAddSpeaker} >Add Speaker</Button>
+                                        </Grid.Column>
+                                    </Grid.Row>
+                                )}
+                            </Grid>
+                        </div>
+                    )}
+                </Grid.Column>
+            </Grid.Row>
+        )
+    }
 
     renderSpeakersDragAndDrop = () => (
         <Grid.Row style={{ display: 'flex', alignItems: 'flex-start', padding: 0 }}>
@@ -755,7 +767,7 @@ class Proofread extends React.Component {
                             {this.props.article && this.props.video && (
                                 <div>
                                     <SlidesList
-                                        editable
+                                        editable={this.isEditable()}
                                         slides={this.props.subtitles}
                                         speakers={[{ speakerNumber: -1 }].concat(this.props.article.speakersProfile)}
                                         currentSlideIndex={this.props.selectedSubtitle ? this.props.selectedSubtitle.subtitleIndex : null}
@@ -782,36 +794,39 @@ class Proofread extends React.Component {
                                             this.onTimeChange(subtitle.startTime)
                                         }}
                                     />
+
                                     <Grid>
                                         <Grid.Row>
-                                            <Grid.Column width={16}>
-                                                <Button
-                                                    primary
-                                                    fluid
-                                                    onClick={() => {
-                                                        const { subtitles } = this.props;
-                                                        const { speakersProfile } = this.props.article;
-                                                        const newSlide = {
-                                                            text: '',
-                                                            speakerProfile: speakersProfile[0],
-                                                        }
-                                                        if (subtitles && subtitles.length > 0) {
-                                                            const lastSlide = subtitles[subtitles.length - 1]
-                                                            newSlide.startTime = subtitles[subtitles.length - 1].endTime / 1000
-                                                            newSlide.slidePosition = lastSlide.slidePosition;
-                                                            newSlide.subslidePosition = lastSlide.subslidePosition;
-                                                        } else {
-                                                            newSlide.startTime = 0;
-                                                            newSlide.slidePosition = 0;
-                                                            newSlide.subslidePosition = 0;
-                                                        }
-                                                        newSlide.endTime = newSlide.startTime + 1;
-                                                        this.onAddSubtitle(newSlide)
-                                                    }}
-                                                >
-                                                    Add slide
+                                            {this.isEditable() && (
+                                                <Grid.Column width={16}>
+                                                    <Button
+                                                        primary
+                                                        fluid
+                                                        onClick={() => {
+                                                            const { subtitles } = this.props;
+                                                            const { speakersProfile } = this.props.article;
+                                                            const newSlide = {
+                                                                text: '',
+                                                                speakerProfile: speakersProfile[0],
+                                                            }
+                                                            if (subtitles && subtitles.length > 0) {
+                                                                const lastSlide = subtitles[subtitles.length - 1]
+                                                                newSlide.startTime = subtitles[subtitles.length - 1].endTime / 1000
+                                                                newSlide.slidePosition = lastSlide.slidePosition;
+                                                                newSlide.subslidePosition = lastSlide.subslidePosition;
+                                                            } else {
+                                                                newSlide.startTime = 0;
+                                                                newSlide.slidePosition = 0;
+                                                                newSlide.subslidePosition = 0;
+                                                            }
+                                                            newSlide.endTime = newSlide.startTime + 1;
+                                                            this.onAddSubtitle(newSlide)
+                                                        }}
+                                                    >
+                                                        Add slide
                                                 </Button>
-                                            </Grid.Column>
+                                                </Grid.Column>
+                                            )}
                                         </Grid.Row>
                                         {this.renderSpeakersProfiles()}
 
@@ -938,7 +953,7 @@ const mapDispatchToProps = (dispatch) => ({
     fetchTranscriptionVersions: id => dispatch(actions.fetchTranscriptionVersions(id)),
     setTranscriptionVersionForSubslide: params => dispatch(actions.setTranscriptionVersionForSubslide(params)),
     setTranscriptionVersionForAllSubslides: (params) => dispatch(actions.setTranscriptionVersionForAllSubslides(params)),
-    
+
     updateSubslide: (slidePosition, subslidePosition, changes) => dispatch(actions.updateSubslide(slidePosition, subslidePosition, changes)),
     onSplitSubslide: (slidePosition, subslidePosition, wordIndex, currentTime) => dispatch(actions.splitSubslide(slidePosition, subslidePosition, wordIndex, currentTime)),
     addSubslide: subslide => dispatch(actions.addSubslide(subslide)),

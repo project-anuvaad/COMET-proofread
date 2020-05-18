@@ -55,7 +55,7 @@ class SlidesList extends React.Component {
               <Modal.Header>Delete Subtitle</Modal.Header>
               <Modal.Content>
                 Are you sure you want to delete this item?
-            </Modal.Content>
+              </Modal.Content>
               <Modal.Actions>
                 <Button onClick={() => this.setState({ isDeleteModalVisible: false })}>Cancel</Button>
                 <Button color="red" onClick={() => { this.setState({ isDeleteModalVisible: false }); this.props.onDeleteSlide({ slide: this.state.selectedSlide, index: this.state.selectedSlideIndex }) }}>Yes</Button>
