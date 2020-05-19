@@ -408,7 +408,19 @@ class Proofread extends React.Component {
                                     </Grid.Column>
                                     <Grid.Column width={4}>
 
-                                        <div style={{ marginLeft: 10 }}>
+                                        <div
+                                            draggable={true}
+                                            style={{
+                                                backgroundColor: 'transparent',
+                                                position: 'relative',
+                                                color: 'white',
+                                                cursor: 'pointer',
+                                                height: 20,
+                                                display: 'inline-block',
+                                                marginLeft: 10
+                                            }}
+                                            onDragStart={(e) => e.dataTransfer.setData('text', JSON.stringify({ speaker: { speakerNumber: -1 } }))}
+                                        >
                                             <SpeakerDragItem speaker={{ speakerNumber: -1 }} />
                                         </div>
                                     </Grid.Column>
@@ -422,7 +434,19 @@ class Proofread extends React.Component {
                                         </Grid.Column>
                                         <Grid.Column width={4}>
 
-                                            <div style={{ marginLeft: 10 }}>
+                                            <div
+                                                draggable={true}
+                                                style={{
+                                                    backgroundColor: 'transparent',
+                                                    position: 'relative',
+                                                    color: 'white',
+                                                    cursor: 'pointer',
+                                                    height: 20,
+                                                    display: 'inline-block',
+                                                    marginLeft: 10
+                                                }}
+                                                onDragStart={(e) => e.dataTransfer.setData('text', JSON.stringify({ speaker: { speakerNumber: speaker.speakerNumber } }))}
+                                            >
                                                 <SpeakerDragItem speaker={{ speakerNumber: speaker.speakerNumber }} />
                                             </div>
                                         </Grid.Column>
