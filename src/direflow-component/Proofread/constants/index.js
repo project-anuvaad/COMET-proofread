@@ -5,7 +5,7 @@ export const VIDEO_PLAYER_THUMBNAIL_IMAGE = 'https://tailoredvideowiki.s3-eu-wes
 export const SPEAKER_BACKGROUND_COLORS = {
     [-1]: 'white',
     0: '#800080',
-    1: 'blue',
+    1: '#0e7ceb',
     2: 'green',
     3: 'yellow',
     4: 'orange',

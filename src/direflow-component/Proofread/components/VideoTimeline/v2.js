@@ -108,7 +108,11 @@ class VideoTimelineV2 extends React.Component {
         drawCanvas(this.canvasRef, 6000, 40, duration || 0, 0, 60000)
         const barHalfSize = this.canvasRef.parentElement.offsetWidth / 2;
         const newLeft = this.state.barHalfSize - durationToPixels(this.props.currentTime, SCALE);
-        this.setState({ barHalfSize, subtitles: subtitles.map((s) => ({ ...s })), left: newLeft, lastLeft: newLeft });
+        this.setState({ barHalfSize, subtitles: subtitles.map((s) => ({ ...s })), left: newLeft, lastLeft: newLeft }, () => {
+            if (this.props.currentTime !== 0) {
+                this.handleCurrentTimeChange(this.props.currentTime, this.props.duration)
+            }
+        });
         window.onresize = () => {
             setTimeout(() => {
                 this.setState(({ barHalfSize, left }) => {

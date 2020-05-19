@@ -3,7 +3,7 @@ import React from 'react';
 import PropTypes from 'prop-types'
 import classnames from 'classnames';
 import { Icon, Input, Button, Dropdown } from 'semantic-ui-react';
-import { formatTime, unformatTime, isTimeFormatValid } from '../../utils/helpers';
+import { formatTime, unformatTime, isTimeFormatValid, removeMillisecondsFromFormattedTime } from '../../utils/helpers';
 import { SPEAKER_BACKGROUND_COLORS } from '../../constants';
 
 export default class Slide extends React.Component {
@@ -15,7 +15,7 @@ export default class Slide extends React.Component {
     componentDidMount = () => {
         if (this.props.slide) {
             const { speakerProfile, startTime, endTime } = this.props.slide;
-            this.setState({ speakerNumber: speakerProfile ? speakerProfile.speakerNumber : null, startTime: formatTime(startTime), endTime: formatTime(endTime) });
+            this.setState({ speakerNumber: speakerProfile ? speakerProfile.speakerNumber : null, startTime: formatTime(startTime, { milliseconds: true }), endTime: formatTime(endTime, { milliseconds: true }) });
         }
     }
 
@@ -23,7 +23,7 @@ export default class Slide extends React.Component {
         if (this.props.slide !== nextProps.slide) {
             const { startTime, endTime } = nextProps.slide;
             const { speakerNumber } = nextProps.slide.speakerProfile
-            this.setState({ speakerNumber, startTime: formatTime(startTime), endTime: formatTime(endTime) });
+            this.setState({ speakerNumber, startTime: formatTime(startTime, { milliseconds: true }), endTime: formatTime(endTime, { milliseconds: true }) });
         }
     }
 
@@ -31,7 +31,7 @@ export default class Slide extends React.Component {
         const fieldName = e.target.name;
         const formattedValue = this.state[fieldName];
         const unformattedTime = unformatTime(formattedValue);
-        if (unformatTime(formatTime(this.props.slide[fieldName])).totalMilliseconds !== unformattedTime.totalMilliseconds) {
+        if (unformatTime(formatTime(this.props.slide[fieldName], { milliseconds: true })).totalMilliseconds !== unformattedTime.totalMilliseconds) {
             this.props.onChange({ [fieldName]: unformattedTime.totalMilliseconds / 1000 });
         }
     }
@@ -73,7 +73,7 @@ export default class Slide extends React.Component {
                                 >
                                     <small><strong>{parseInt((slide.endTime - slide.startTime) / 1000)} Seconds</strong></small>
                                 </span>
-                                {(this.state.startTime)} - {(this.state.endTime)}
+                                {(removeMillisecondsFromFormattedTime(this.state.startTime))} - {removeMillisecondsFromFormattedTime(this.state.endTime)}
                             </span>
                         ) : (
                                 <div>
@@ -83,7 +83,7 @@ export default class Slide extends React.Component {
                                         <small><strong>{parseInt((unformatTime(this.state.endTime).totalSeconds - unformatTime(this.state.startTime).totalSeconds))} Seconds</strong></small>
                                     </span>
                                     <Input
-                                        style={{ width: 60 }}
+                                        style={{ width: 75 }}
                                         type="text"
                                         value={this.state.startTime}
                                         size="mini"
@@ -97,7 +97,7 @@ export default class Slide extends React.Component {
 
                                     >-</span>
                                     <Input
-                                        style={{ width: 60 }}
+                                        style={{ width: 75 }}
                                         type="text"
                                         value={this.state.endTime}
                                         size="mini"

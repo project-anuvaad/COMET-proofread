@@ -16,7 +16,7 @@ export const generateConvertStages = function generateConvertStages() {
   }]
 }
 
-export function formatTime(milliseconds) {
+export function formatTime(milliseconds, options) {
   if (!milliseconds) return '00:00';
   let seconds = milliseconds / 1000;
   let hours = Math.floor(seconds / 3600);
@@ -27,7 +27,21 @@ export function formatTime(milliseconds) {
   if (minutes < 10) { minutes = "0" + minutes; }
   if (seconds < 10) { seconds = "0" + seconds; }
   let time = minutes + ':' + seconds;
-  return time.substr(0, 5);
+  if (options && options.milliseconds) {
+    if ((parseFloat(seconds) === parseFloat(`0${seconds}`) || parseFloat(seconds) === 0) && String(seconds).indexOf('.') === -1) {
+      time += '.000';
+    }
+    for (let i = 0; i < Array(9 - time.length).length; i++) {
+      time += '0';
+    }
+  } else {
+    time = time.substr(0, 5);
+  }
+  return time
+}
+export function removeMillisecondsFromFormattedTime(formattedTime) {
+  if (!formattedTime || formattedTime.indexOf('.') === -1) return formattedTime;
+  return formattedTime.split('.')[0];
 }
 
 export function isTimeFormatValid(formattedTime) {
@@ -36,10 +50,19 @@ export function isTimeFormatValid(formattedTime) {
 }
 
 export function unformatTime(formattedTime) {
-  let [ minutes, seconds ] = formattedTime.split(':');
+  if (!formattedTime) return { };
+  let [minutes, seconds] = formattedTime.split(':');
+  console.log('formatted time is', formattedTime, minutes, seconds, typeof seconds )
+  let milliseconds = 0;
   minutes = parseInt(minutes);
-  seconds = parseFloat(seconds);
-  const totalSeconds = minutes * 60 + seconds;
+  
+  if (seconds.indexOf('.') === -1) {
+    seconds = parseFloat(seconds);
+  } else {
+    milliseconds = parseInt(seconds.split('.')[1])
+    seconds = parseInt(seconds.split('.')[0])
+  }
+  const totalSeconds = minutes * 60 + seconds + milliseconds / 1000;
   const totalMilliseconds = totalSeconds * 1000
   return { minutes, seconds, totalSeconds, totalMilliseconds };
 }
@@ -59,7 +82,7 @@ export function debounce(func, wait, immediate) {
     timeout = setTimeout(later, wait);
     if (callNow) func.apply(context, args);
   };
-};
+}
 
 export function cloneObject(obj) {
   return JSON.parse(JSON.stringify(obj))
@@ -86,7 +109,7 @@ export function getUserOrganziationRole(user, organization) {
 
 export function getSlideAndSubslideIndexFromPosition(slides, slidePosition, subslidePosition) {
   const slideIndex = slides.findIndex((s) => parseInt(s.position) === parseInt(slidePosition));
-  if (slideIndex === -1) return { };
+  if (slideIndex === -1) return {};
   const subslideIndex = slides[slideIndex].content.findIndex((s) => parseInt(s.position) === parseInt(subslidePosition));
   return { slideIndex, subslideIndex };
 }
@@ -110,12 +133,12 @@ export function matchVideosWithSubtitels(videos, subtitlesFiles) {
   // Remove subtitlesFiles
   const subtitlesFilesNames = subtitlesFiles.map((s) => removeExtensionAndLowercase(s.name));
   videos.filter(v => !v.subtitle).forEach((video) => {
-      console.log('video', video)
-      const videoName = removeExtensionAndLowercase(video.content.name);
-      if (subtitlesFilesNames.indexOf(videoName) !== -1) {
-          video.hasSubtitle = true;
-          video.subtitle = subtitlesFiles[subtitlesFilesNames.indexOf(videoName)];
-      }
+    console.log('video', video)
+    const videoName = removeExtensionAndLowercase(video.content.name);
+    if (subtitlesFilesNames.indexOf(videoName) !== -1) {
+      video.hasSubtitle = true;
+      video.subtitle = subtitlesFiles[subtitlesFilesNames.indexOf(videoName)];
+    }
   })
 
   return videos;
@@ -126,15 +149,15 @@ export function showMoreText(text, length) {
   return text.length > length ? `${text.substr(0, length)} ...` : text;
 }
 
-export function getUsersByRoles (users, organization, roles) {
+export function getUsersByRoles(users, organization, roles) {
   return !users || !Array.isArray(users) ? [] : users.filter((user) => {
-      const orgRole = user.organizationRoles.find(r => r.organization === organization._id);
-      if (!orgRole) return false;
+    const orgRole = user.organizationRoles.find(r => r.organization === organization._id);
+    if (!orgRole) return false;
 
-      if (roles.indexOf('owner') !== -1 && orgRole.organizationOwner) return true;
+    if (roles.indexOf('owner') !== -1 && orgRole.organizationOwner) return true;
 
-      if (orgRole.permissions.some(perm => roles.indexOf(perm) !== -1)) return true;
-      return false;
+    if (orgRole.permissions.some(perm => roles.indexOf(perm) !== -1)) return true;
+    return false;
   })
 }
 
@@ -157,13 +180,13 @@ export function getSpeakersTranslatorsMap(speakersProfile, translators, users) {
   const translatorsMap = {};
   const assignedSpeakers = translators.map(t => t.speakerNumber);
   speakersProfile.forEach(spk => {
-      const translatorIndex = assignedSpeakers.indexOf(spk.speakerNumber);
-      if (translatorIndex !== -1 && translators[translatorIndex]) {
-          const assignedUser = users.find(u => u._id === translators[translatorIndex].user);
-          if (assignedUser) {
-              translatorsMap[spk.speakerNumber] = assignedUser;
-          }
+    const translatorIndex = assignedSpeakers.indexOf(spk.speakerNumber);
+    if (translatorIndex !== -1 && translators[translatorIndex]) {
+      const assignedUser = users.find(u => u._id === translators[translatorIndex].user);
+      if (assignedUser) {
+        translatorsMap[spk.speakerNumber] = assignedUser;
       }
+    }
   });
   return translatorsMap;
 }

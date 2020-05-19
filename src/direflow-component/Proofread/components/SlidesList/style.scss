@@ -39,7 +39,8 @@
 .slide-item.active {
     color: black !important;
     font-weight: 500 !important;
-    border: 2px solid #0e7ceb !important;   
+    // border: 2px solid #0e7ceb !important;   
+    box-shadow: rgba(0, 0, 0, 0.7) 0px 2px 11px 0px;
 }
 
 .note {

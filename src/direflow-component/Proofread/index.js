@@ -1,6 +1,6 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import { Progress, Grid, Dropdown, Button, Icon, Modal, Input, Popup } from 'semantic-ui-react';
+import { Progress, Grid, Dropdown, Button, Icon, Modal, Input, Popup, Checkbox } from 'semantic-ui-react';
 import Lottie from 'react-lottie';
 import Switch from 'react-switch';
 
@@ -695,30 +695,7 @@ class Proofread extends React.Component {
                             </Grid>
                         </Grid.Column>
                     </Grid.Row>
-                    {/* <Grid.Row>
-                        <Grid.Column width={16}>
-                            <Grid style={{ display: 'flex', justifyContent: 'center', marginBottom: '.2rem' }}>
-                                <Grid.Row>
-                                    <Grid.Column width={16} style={{ marginTop: 5, paddingLeft: 0 }}>
-                                        {this.state.duration && (
-                                            <VideoTimeline
-                                                splitterDragging={this.state.splitterDragging}
-                                                currentTime={this.state.currentTime}
-                                                onTimeChange={this.onTimeChange}
-                                                duration={this.state.duration}
-                                                subtitles={this.props.subtitles}
-                                                selectedSubtitleIndex={this.props.selectedSubtitle ? this.props.selectedSubtitle.subtitleIndex : null}
-                                                onSubtitleChange={this.onSaveSubtitle}
-                                                onAddSubtitle={this.onAddSubtitle}
-                                                onSubtitleSelect={(subtitle, index) => this.props.setSelectedSubtitle(subtitle, index)}
-                                                onSubtitleSplit={this.onSubtitleSplit}
-                                            />
-                                        )}
-                                    </Grid.Column>
-                                </Grid.Row>
-                            </Grid>
-                        </Grid.Column>
-                    </Grid.Row> */}
+
 
                     <Grid.Row>
                         <Grid.Column width={8}>
@@ -749,6 +726,39 @@ class Proofread extends React.Component {
                                     </div>
                                 )}
                             </div>
+                            {this.isEditable() && (
+                                <div style={{ width: '100%', overflow: 'hidden', height: 300, marginTop: '2rem' }}>
+                                    <div style={{ display: 'flex', alignItems: 'center', marginBottom: 10, }}>
+                                        <Switch
+                                            onColor="#86d3ff"
+                                            onHandleColor="#2693e6"
+                                            handleDiameter={30}
+                                            uncheckedIcon={false}
+                                            checkedIcon={false}
+                                            boxShadow="0px 1px 5px rgba(0, 0, 0, 0.6)"
+                                            activeBoxShadow="0px 0px 1px 10px rgba(0, 0, 0, 0.2)"
+                                            height={20}
+                                            width={48}
+                                            checked={this.state.isTimelineVisible}
+                                            onChange={(checked) => this.setState({ isTimelineVisible: checked })}
+                                        /> 	&nbsp;	&nbsp; Show Timeline
+                                </div>
+                                    {this.state.duration && this.state.isTimelineVisible && (
+                                        <VideoTimeline
+                                            splitterDragging={this.state.splitterDragging}
+                                            currentTime={this.state.currentTime}
+                                            onTimeChange={this.onTimeChange}
+                                            duration={this.state.duration}
+                                            subtitles={this.props.subtitles}
+                                            selectedSubtitleIndex={this.props.selectedSubtitle ? this.props.selectedSubtitle.subtitleIndex : null}
+                                            onSubtitleChange={this.onSaveSubtitle}
+                                            onAddSubtitle={this.onAddSubtitle}
+                                            onSubtitleSelect={(subtitle, index) => this.props.setSelectedSubtitle(subtitle, index)}
+                                            onSubtitleSplit={this.onSubtitleSplit}
+                                        />
+                                    )}
+                                </div>
+                            )}
                         </Grid.Column>
                         <Grid.Column width={2} />
                         <Grid.Column width={6}>
