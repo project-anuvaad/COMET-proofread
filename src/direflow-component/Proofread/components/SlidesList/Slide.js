@@ -10,12 +10,18 @@ export default class Slide extends React.Component {
     state = {
         startTime: '',
         endTime: '',
+        seconds: 0,
         speakerNumber: null,
     }
     componentDidMount = () => {
         if (this.props.slide) {
             const { speakerProfile, startTime, endTime } = this.props.slide;
-            this.setState({ speakerNumber: speakerProfile ? speakerProfile.speakerNumber : null, startTime: formatTime(startTime, { milliseconds: true }), endTime: formatTime(endTime, { milliseconds: true }) });
+            this.updateTimings({
+                speakerNumber: speakerProfile ? speakerProfile.speakerNumber : null,
+                startTime,
+                endTime,
+                seconds: endTime - startTime,
+            });
         }
     }
 
@@ -23,8 +29,27 @@ export default class Slide extends React.Component {
         if (this.props.slide !== nextProps.slide) {
             const { startTime, endTime } = nextProps.slide;
             const { speakerNumber } = nextProps.slide.speakerProfile
-            this.setState({ speakerNumber, startTime: formatTime(startTime, { milliseconds: true }), endTime: formatTime(endTime, { milliseconds: true }) });
+            this.updateTimings({ startTime, endTime, speakerNumber })
         }
+    }
+
+    updateTimings = ({ startTime, endTime, speakerNumber }) => {
+        this.setState({
+            speakerNumber,
+            startTime: formatTime(startTime, { milliseconds: true }),
+            endTime: formatTime(endTime, { milliseconds: true }),
+            seconds: parseInt((endTime - startTime) / 1000),
+        });
+    }
+
+    onSecondsChange = (e) => {
+        let seconds = this.state.seconds;
+        if (Number.isInteger(parseInt(e.target.value))) {
+            seconds = parseInt(e.target.value);
+        }
+        let { startTime, endTime, speakerProfile } = this.props.slide;
+        endTime = startTime + parseInt(seconds) * 1000;
+        this.updateTimings({ startTime, endTime, speakerNumber: speakerProfile.speakerNumber })
     }
 
     onTimeBlur = (e) => {
@@ -47,10 +72,10 @@ export default class Slide extends React.Component {
 
     render() {
         const { slide, index, active, editable, speakers } = this.props;
-        
+
         return (
             <div
-                style={{ borderColor: SPEAKER_BACKGROUND_COLORS[slide.speakerProfile.speakerNumber ]}}
+                style={{ borderColor: SPEAKER_BACKGROUND_COLORS[slide.speakerProfile.speakerNumber] }}
                 className={classnames({ "slide-item": true, active })}
             >
                 <span>
@@ -71,7 +96,7 @@ export default class Slide extends React.Component {
                                 <span
                                     style={{ display: 'inline-block', marginRight: 10 }}
                                 >
-                                    <small><strong>{parseInt((slide.endTime - slide.startTime) / 1000)} Seconds</strong></small>
+                                    <small><strong>{this.state.seconds} Seconds</strong></small>
                                 </span>
                                 {(removeMillisecondsFromFormattedTime(this.state.startTime))} - {removeMillisecondsFromFormattedTime(this.state.endTime)}
                             </span>
@@ -80,7 +105,18 @@ export default class Slide extends React.Component {
                                     <span
                                         style={{ display: 'inline-block', marginRight: 10 }}
                                     >
-                                        <small><strong>{parseInt((unformatTime(this.state.endTime).totalSeconds - unformatTime(this.state.startTime).totalSeconds))} Seconds</strong></small>
+
+                                        <Input
+                                            style={{ width: 60, marginRight: 10 }}
+                                            type="text"
+                                            value={this.state.seconds}
+                                            size="mini"
+                                            name="endTime"
+                                            onClick={this.stopPropagation}
+                                            onChange={this.onSecondsChange}
+                                            onBlur={this.onTimeBlur}
+                                        />
+                                        <small><strong>Seconds</strong></small>
                                     </span>
                                     <Input
                                         style={{ width: 75 }}

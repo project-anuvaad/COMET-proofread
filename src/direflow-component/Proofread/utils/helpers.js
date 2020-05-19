@@ -31,12 +31,16 @@ export function formatTime(milliseconds, options) {
     if ((parseFloat(seconds) === parseFloat(`0${seconds}`) || parseFloat(seconds) === 0) && String(seconds).indexOf('.') === -1) {
       time += '.000';
     }
-    for (let i = 0; i < Array(9 - time.length).length; i++) {
-      time += '0';
+    if ((9 - time.length) > 0) {
+      for (let i = 0; i < Array(9 - time.length).length; i++) {
+        time += '0';
+      }
     }
+    
   } else {
     time = time.substr(0, 5);
   }
+  time = time.substr(0, 9)
   return time
 }
 export function removeMillisecondsFromFormattedTime(formattedTime) {
@@ -46,7 +50,7 @@ export function removeMillisecondsFromFormattedTime(formattedTime) {
 
 export function isTimeFormatValid(formattedTime) {
   if (!formattedTime) return false;
-  return !!formattedTime.match(/^[0-9]?[0-9]?\:[0-9]{0,2}?$/gi);
+  return !!formattedTime.match(/^[0-9]?[0-9]?\:[0-9]{0,2}?\.?[0-9]{0,3}?$/gi);
 }
 
 export function unformatTime(formattedTime) {
