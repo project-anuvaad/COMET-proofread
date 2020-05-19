@@ -308,7 +308,35 @@ class Proofread extends React.Component {
         });
         return subslides;
     }
-
+    renderTimingInfo = (seconds) => {
+        let comp;
+        const style = {
+            color: 'gray',
+        }
+        if (seconds <= 15) {
+            comp = (
+                <div style={style}>
+                    <Icon name="check" size="large" color="green" />
+                    0-15 seconds - Ideal slide length
+                </div>
+            )
+        } else if (seconds <= 20) {
+            comp = (
+                <div style={style}>
+                    <Icon name="warning sign" size="large" color="yellow" />
+                    15-20 seconds - Caution - excessive slide length
+                </div>
+            )
+        } else {
+            comp = (
+                <div style={style}>
+                    <Icon name="dont" size="large" color="red" />
+                    20 seconds and above - Not recommended slide length
+                </div>
+            )
+        }
+        return comp;
+    }
     renderConvertConfirmModal = () => {
         return (
             <Modal open={this.state.isConfirmConvertModalVisible} onClose={() => this.setState({ isConfirmConvertModalVisible: false })} size="tiny">
@@ -714,8 +742,11 @@ class Proofread extends React.Component {
                                             videoRef={(ref) => this.videoRef = ref}
                                             url={this.props.video.url}
                                             onPlayToggle={this.onPlayToggle}
-                                            extraContent={
-                                                (
+                                            extraContent={this.props.selectedSubtitle && this.props.selectedSubtitle.subtitle ? (
+                                                <div style={{ minWidth: 130 }}>
+                                                    {this.renderTimingInfo(parseInt((this.props.selectedSubtitle.subtitle.endTime - this.props.selectedSubtitle.subtitle.startTime) / 1000))}
+                                                </div>
+                                            ) : (
                                                     <p
                                                         style={{ width: 130 }}
                                                     >
