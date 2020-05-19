@@ -409,7 +409,7 @@ class Proofread extends React.Component {
                                     <Grid.Column width={4}>
 
                                         <div
-                                            draggable={true}
+                                            draggable={isEditable}
                                             style={{
                                                 backgroundColor: 'transparent',
                                                 position: 'relative',
@@ -435,7 +435,7 @@ class Proofread extends React.Component {
                                         <Grid.Column width={4}>
 
                                             <div
-                                                draggable={true}
+                                                draggable={isEditable}
                                                 style={{
                                                     backgroundColor: 'transparent',
                                                     position: 'relative',
