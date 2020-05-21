@@ -291,6 +291,11 @@ class Proofread extends React.Component {
         this.props.markVideoAsDone(this.props.video._id, this.props.article._id)
     }
 
+    onOpenTranslationVersions = () => {
+        this.props.fetchTranscriptionVersions(this.props.videoId);
+        this.setState({ isTranscriptionVersionModalVisible: true })
+    }
+
     getVersionedSubslides = () => {
         const { transcriptionVersions, selectedSubtitle } = this.props;
         if (!selectedSubtitle || !selectedSubtitle.subtitle) return [];
@@ -827,7 +832,7 @@ class Proofread extends React.Component {
                                             subtitle={this.props.selectedSubtitle.subtitle}
                                             speakers={[{ speakerNumber: -1 }].concat(this.props.article.speakersProfile)}
                                             showTextArea={this.props.selectedSubtitle.subtitle.speakerProfile.speakerNumber !== -1}
-                                            onOpenTranslationVersions={() => this.setState({ isTranscriptionVersionModalVisible: true })}
+                                            onOpenTranslationVersions={this.onOpenTranslationVersions}
                                             onFindAndReplaceOpen={() => this.setState({ isFindAndReplaceModalVisible: true })}
                                             onFindAndReplaceSubmit={({ find, replace }) => this.props.findAndReplaceText(find, replace)}
                                             onSave={(changes) => {
