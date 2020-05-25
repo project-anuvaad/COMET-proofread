@@ -820,8 +820,8 @@ class Proofread extends React.Component {
                                 </div>
                             )}
                         </Grid.Column>
-                        <Grid.Column width={2} />
-                        <Grid.Column width={6}>
+                        <Grid.Column width={1} />
+                        <Grid.Column width={7}>
                             <div>
                                 {this.props.video && this.props.video.status === 'proofreading' && this.props.article && this.props.article.speakersProfile && this.props.selectedSubtitle && this.props.selectedSubtitle.subtitle ? (
                                     <div style={{ width: '100%' }}>
