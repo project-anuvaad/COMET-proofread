@@ -37,6 +37,7 @@ class Proofread extends React.Component {
         selectedSubtitle: null,
         splitterDragging: false,
         selectedSubtitleIndex: null,
+        isTimelineVisible: true,
         isConfirmConvertModalVisible: false,
         isConfirmDoneModalVisible: false,
         isFindAndReplaceModalVisible: false,
