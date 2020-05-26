@@ -917,6 +917,8 @@ class Proofread extends React.Component {
                                                     <Button
                                                         primary
                                                         fluid
+                                                        disabled={this.props.updateLoading}
+                                                        loading={this.props.updateLoading}
                                                         onClick={() => {
                                                             const { subtitles } = this.props;
                                                             const { speakersProfile } = this.props.article;
@@ -1040,6 +1042,7 @@ class Proofread extends React.Component {
 const mapStateToProps = ({ proofread }) => ({
     video: proofread.video,
     fetchVideoState: proofread.fetchVideoState,
+    updateLoading: proofread.updateLoading,
     article: proofread.article,
     fetchArticleState: proofread.fetchArticleState,
     updateSubslideState: proofread.updateSubslideState,

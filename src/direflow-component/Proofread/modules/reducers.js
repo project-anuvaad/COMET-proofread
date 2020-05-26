@@ -4,6 +4,7 @@ const INITIAL_STATE = {
     user: null,
     organization: null,
     video: null,
+    updateLoading: false,
     organizationVideos: {
         status: 'done',
         videosList: [],
@@ -62,6 +63,8 @@ export default function (state = INITIAL_STATE, action) {
             return { ...state, fetchVideoState: 'done', video: action.payload };
         case actionTypes.FETCH_VIDEO_FAILED:
             return { ...state, fetchVideoState: 'failed', fetchVideoError: action.payload };
+        case actionTypes.SET_UPDATE_LOADING:
+            return { ...state, updateLoading: action.payload };
         case actionTypes.SET_STAGES:
             return { ...state, convertStages: action.payload };
         case actionTypes.FETCH_ORGANIZATION_VIDEOS_LOADING:

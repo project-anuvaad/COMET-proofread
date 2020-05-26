@@ -60,6 +60,10 @@ const fetchArticleFailed = (err) => ({
     payload: err,
 })
 
+const setUpdateLoading = loading => ({
+    type: actionTypes.SET_UPDATE_LOADING,
+    payload: loading,
+})
 
 const setStages = (stages, activeStageIndex) => ({
     type: actionTypes.SET_STAGES,
@@ -355,6 +359,8 @@ export const setSubtitles = (subtitles) => ({
 
 export const updateSubslide = (slidePosition, subslidePosition, changes) => (dispatch, getState) => {
     dispatch(updateSubslideLoading());
+    dispatch(setUpdateLoading(true));
+
     const article = { ...getState()[moduleName].article };
     const { selectedSubtitle } = getState()[moduleName];
     const { slideIndex, subslideIndex } = getSlideAndSubslideIndexFromPosition(article.slides, slidePosition, subslidePosition);
@@ -373,6 +379,7 @@ export const updateSubslide = (slidePosition, subslidePosition, changes) => (dis
             }
             dispatch(setSlidesToSubtitles(article.slides));
             dispatch(updateSubslideSuccess(article));
+            dispatch(setUpdateLoading(false));
 
         })
         .catch(err => {
@@ -385,6 +392,7 @@ export const updateSubslide = (slidePosition, subslidePosition, changes) => (dis
             }
             dispatch(setSlidesToSubtitles(article.slides));
             dispatch(updateSubslideFailed(reason));
+            dispatch(setUpdateLoading(false));
         })
 }
 
@@ -415,6 +423,8 @@ export const splitSubslide = (slidePosition, subslidePosition, wordIndex, time) 
 export const addSubslide = (subslide) => (dispatch, getState) => {
     const article = { ...getState()[moduleName].article };
     const { slidePosition, subslidePosition } = subslide;
+
+    dispatch(setUpdateLoading(true));
     requestAgent
         .post(Api.article.addSubslide(article._id, slidePosition, subslidePosition), subslide)
         .then((res) => {
@@ -422,11 +432,13 @@ export const addSubslide = (subslide) => (dispatch, getState) => {
             dispatch(updateSubslideSuccess(article));
             dispatch(setSlidesToSubtitles(article.slides));
 
+            dispatch(setUpdateLoading(false));
         })
         .catch(err => {
             const reason = err.response && err.response.text ? err.response.text : 'Something went wrong';
             NotificationService.responseError(err);
             dispatch(updateSubslideFailed(reason));
+            dispatch(setUpdateLoading(false));
         })
 }
 
@@ -434,6 +446,7 @@ export const addSubslide = (subslide) => (dispatch, getState) => {
 export const deleteSubslide = (slidePosition, subslidePosition) => (dispatch, getState) => {
     dispatch(updateSubslideLoading());
     const article = { ...getState()[moduleName].article };
+    dispatch(setUpdateLoading(true));
     requestAgent
         .delete(Api.article.deleteSubslide(article._id, slidePosition, subslidePosition))
         .then((res) => {
@@ -441,11 +454,13 @@ export const deleteSubslide = (slidePosition, subslidePosition) => (dispatch, ge
             dispatch(setSlidesToSubtitles(article.slides));
             dispatch(updateSubslideSuccess(article));
             dispatch(setSelectedSubtitle(null, null));
+            dispatch(setUpdateLoading(false));
         })
         .catch(err => {
             const reason = err.response && err.response.text ? err.response.text : 'Something went wrong';
             NotificationService.responseError(err)
             dispatch(updateSubslideFailed(reason));
+            dispatch(setUpdateLoading(false));
         })
 }
 
