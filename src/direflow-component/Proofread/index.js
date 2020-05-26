@@ -415,7 +415,8 @@ class Proofread extends React.Component {
 
     renderSpeakersProfiles = () => {
         const isEditable = this.isEditable();
-
+        if (!isEditable) return null;
+        
         return (
             <Grid.Row>
                 <Grid.Column width={16}>
