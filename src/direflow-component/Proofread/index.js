@@ -316,33 +316,51 @@ class Proofread extends React.Component {
     }
     renderTimingInfo = (seconds) => {
         let comp;
+        let elapsedTimeComp;
         const style = {
             color: 'gray',
         }
-        if (seconds <= 15) {
-            comp = (
-                <div style={style}>
-                    <Icon name="check" size="large" color="green" />
-                    0-15 seconds - Ideal slide length
+        const { currentTime } = this.state;
+        const { selectedSubtitle } = this.props;
+        if (currentTime && selectedSubtitle && selectedSubtitle.subtitle) {
+            const seconds = parseInt((currentTime - selectedSubtitle.subtitle.startTime) / 1000);
+            elapsedTimeComp = (
+                <div style={{ color: 'gray', marginLeft: 30 }}>
+                    Elapsed Time: {seconds} Seconds
                 </div>
             )
-        } else if (seconds <= 20) {
-            comp = (
-                <div style={style}>
-                    <Icon name="warning sign" size="large" color="yellow" />
-                    15-20 seconds - Caution - excessive slide length
-                </div>
-            )
-        } else {
-            comp = (
-                <div style={style}>
-                    <Icon name="dont" size="large" color="red" />
-                    20 seconds and above - Not recommended slide length
-                </div>
-            )
+
+            if (seconds <= 15) {
+                comp = (
+                    <div style={style}>
+                        <Icon name="check" size="large" color="green" />
+                        0-15 seconds - Ideal slide length
+                    </div>
+                )
+            } else if (seconds <= 20) {
+                comp = (
+                    <div style={style}>
+                        <Icon name="warning sign" size="large" color="yellow" />
+                        15-20 seconds - Caution - excessive slide length
+                    </div>
+                )
+            } else {
+                comp = (
+                    <div style={style}>
+                        <Icon name="dont" size="large" color="red" />
+                        20 seconds and above - Not recommended slide length
+                    </div>
+                )
+            }
         }
-        return comp;
+        return (
+            <div>
+                {comp}
+                {elapsedTimeComp}
+            </div>
+        );
     }
+
     renderConvertConfirmModal = () => {
         return (
             <Modal open={this.state.isConfirmConvertModalVisible} onClose={() => this.setState({ isConfirmConvertModalVisible: false })} size="tiny">
