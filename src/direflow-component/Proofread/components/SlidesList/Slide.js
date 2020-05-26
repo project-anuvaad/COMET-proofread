@@ -3,16 +3,24 @@ import React from 'react';
 import PropTypes from 'prop-types'
 import classnames from 'classnames';
 import { Icon, Input, Button, Dropdown } from 'semantic-ui-react';
-import { formatTime, unformatTime, isTimeFormatValid, removeMillisecondsFromFormattedTime } from '../../utils/helpers';
+import { formatTime, unformatTime, isTimeFormatValid, removeMillisecondsFromFormattedTime, debounce } from '../../utils/helpers';
 import { SPEAKER_BACKGROUND_COLORS } from '../../constants';
 
 export default class Slide extends React.Component {
-    state = {
-        startTime: '',
-        endTime: '',
-        seconds: 0,
-        speakerNumber: null,
+    constructor(props) {
+        super(props);
+
+        this.state = {
+            startTime: '',
+            endTime: '',
+            seconds: 0,
+            speakerNumber: null,
+        };
+        this.debouncedSave = debounce(({ field, value }) => {
+            this.props.onChange({[field]: value})
+        }, 1000)
     }
+
     componentDidMount = () => {
         if (this.props.slide) {
             const { speakerProfile, startTime, endTime } = this.props.slide;
@@ -50,6 +58,7 @@ export default class Slide extends React.Component {
         let { startTime, endTime, speakerProfile } = this.props.slide;
         endTime = startTime + parseInt(seconds) * 1000;
         this.updateTimings({ startTime, endTime, speakerNumber: speakerProfile.speakerNumber })
+        this.debouncedSave({ field: 'endTime', value: endTime / 1000})
     }
 
     onTimeBlur = (e) => {
@@ -63,8 +72,12 @@ export default class Slide extends React.Component {
 
 
     onTimeChange = (e) => {
+        const fieldName = e.target.name;
         if (isTimeFormatValid(e.target.value)) {
-            this.setState({ [e.target.name]: e.target.value })
+            this.setState({ [fieldName]: e.target.value })
+            const newValue = unformatTime(e.target.value).totalMilliseconds / 1000;
+            console.log('on change', fieldName, newValue )
+            this.debouncedSave({ field: fieldName, value: newValue });
         }
     }
 
