@@ -112,6 +112,8 @@ class Proofread extends React.Component {
         const currentSubtitle = this.props.subtitles[currentSubtitleIndex];
         if (currentSubtitle) {
             this.props.setSelectedSubtitle(currentSubtitle, currentSubtitleIndex);
+        } else if (this.props.selectedSubtitle && this.props.selectedSubtitle.subtitleIndex !== this.props.subtitles.length - 1) {
+            this.props.setSelectedSubtitle(this.props.subtitles[this.props.subtitles.length - 1], this.props.subtitles.length - 1);
         }
     }
 
@@ -316,17 +318,17 @@ class Proofread extends React.Component {
     }
     renderTimingInfo = (seconds) => {
         let comp;
-        let elapsedTimeComp;
+        let estimatedTimeComp;
         const style = {
             color: 'gray',
         }
         const { currentTime } = this.state;
         const { selectedSubtitle } = this.props;
         if (currentTime && selectedSubtitle && selectedSubtitle.subtitle) {
-            const seconds = parseInt((currentTime - selectedSubtitle.subtitle.startTime) / 1000);
-            elapsedTimeComp = (
-                <div style={{ color: 'gray', marginLeft: 30 }}>
-                    Elapsed Time: {seconds} Seconds
+            const seconds = parseFloat((currentTime - selectedSubtitle.subtitle.startTime) / 1000).toFixed(1);
+            estimatedTimeComp = (
+                <div style={{ color: 'gray', marginLeft: 30, marginBottom: 10 }}>
+                    Estimated Time: {seconds} Seconds
                 </div>
             )
 
@@ -355,8 +357,8 @@ class Proofread extends React.Component {
         }
         return (
             <div>
+                {estimatedTimeComp}
                 {comp}
-                {elapsedTimeComp}
             </div>
         );
     }
@@ -887,6 +889,10 @@ class Proofread extends React.Component {
                                         onChange={({ changes }) => {
                                             let { speakerNumber, startTime, endTime } = changes;
                                             if (typeof startTime === 'number' || typeof endTime === 'number') {
+                                                console.log('changes are', changes, this.state.duration)
+                                                if (changes.endTime && changes.endTime > this.state.duration / 1000) {
+                                                    changes.endTime = this.state.duration / 1000;
+                                                }
                                                 this.onSaveSubtitle(this.props.selectedSubtitle.subtitle, this.props.selectedSubtitle.subtitleIndex, changes)
                                             } else if (typeof speakerNumber === 'number') {
                                                 const { article } = this.props;
