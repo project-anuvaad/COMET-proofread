@@ -46,17 +46,17 @@ export default class Slide extends React.Component {
             speakerNumber,
             startTime: formatTime(startTime, { milliseconds: true }),
             endTime: formatTime(endTime, { milliseconds: true }),
-            seconds: parseInt((endTime - startTime) / 1000),
+            seconds: parseFloat((endTime - startTime) / 1000),
         });
     }
 
     onSecondsChange = (e) => {
         let seconds = this.state.seconds;
         if (Number.isInteger(parseInt(e.target.value))) {
-            seconds = parseInt(e.target.value);
+            seconds = parseFloat(e.target.value);
         }
         let { startTime, endTime, speakerProfile } = this.props.slide;
-        endTime = startTime + parseInt(seconds) * 1000;
+        endTime = startTime + parseFloat(seconds) * 1000;
         this.updateTimings({ startTime, endTime, speakerNumber: speakerProfile.speakerNumber })
         this.debouncedSave({ field: 'endTime', value: endTime / 1000})
     }
@@ -109,7 +109,7 @@ export default class Slide extends React.Component {
                                 <span
                                     style={{ display: 'inline-block', marginRight: 10 }}
                                 >
-                                    <small><strong>{this.state.seconds} Seconds</strong></small>
+                                    <small><strong>{parseFloat(this.state.seconds || 0)} Seconds</strong></small>
                                 </span>
                                 {(removeMillisecondsFromFormattedTime(this.state.startTime))} - {removeMillisecondsFromFormattedTime(this.state.endTime)}
                             </span>
@@ -121,7 +121,8 @@ export default class Slide extends React.Component {
 
                                         <Input
                                             style={{ width: 60, marginRight: 10 }}
-                                            type="text"
+                                            type="number"
+                                            min={0}
                                             value={this.state.seconds}
                                             size="mini"
                                             name="endTime"
