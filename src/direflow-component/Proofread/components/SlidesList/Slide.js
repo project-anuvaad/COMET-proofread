@@ -109,7 +109,7 @@ export default class Slide extends React.Component {
                                 <span
                                     style={{ display: 'inline-block', marginRight: 10 }}
                                 >
-                                    <small><strong>{parseFloat(this.state.seconds || 0)} Seconds</strong></small>
+                                    <small><strong>{parseFloat(this.state.seconds || 0).toFixed(1)} Seconds</strong></small>
                                 </span>
                                 {(removeMillisecondsFromFormattedTime(this.state.startTime))} - {removeMillisecondsFromFormattedTime(this.state.endTime)}
                             </span>

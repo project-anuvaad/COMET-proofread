@@ -23,6 +23,8 @@ import FindAndReplaceModal from './components/FindAndReplaceModal';
 import { Styled } from 'direflow-component';
 import SlidesList from './components/SlidesList';
 import TranscriptionVersionSelectModal from './components/TranscriptionVersionSelectModal';
+import CuttingVideoTutorialModal from './components/CuttingVideoTutorialModal';
+import ProofreadingVideoTutorialModal from './components/ProofreadingVideoTutorialModal';
 
 class Proofread extends React.Component {
 
@@ -42,6 +44,8 @@ class Proofread extends React.Component {
         isConfirmDoneModalVisible: false,
         isFindAndReplaceModalVisible: false,
         isTranscriptionVersionModalVisible: false,
+        isCuttingVideoTutorialModalVisible: false,
+        isProofreadingVideoTutorialModalVisible: false,
     }
 
 
@@ -416,7 +420,7 @@ class Proofread extends React.Component {
     renderSpeakersProfiles = () => {
         const isEditable = this.isEditable();
         if (!isEditable) return null;
-        
+
         return (
             <Grid.Row>
                 <Grid.Column width={16}>
@@ -708,6 +712,29 @@ class Proofread extends React.Component {
                                             {this.renderConvertConfirmModal()}
                                             {this.renderDoneConfirmModal()}
                                         </div>
+                                        <div style={{ display: 'flex', justifyContent: 'flex-end', paddingTop: '1rem' }}>
+                                            {this.props.video && this.props.video.status === 'cutting' && (
+                                                <Button
+                                                    circular
+                                                    color="green"
+                                                    size="tiny"
+                                                    onClick={() => this.setState({ isCuttingVideoTutorialModalVisible: true })}
+                                                >
+                                                    Cutting Video Tutorial <Icon name="info circle" style={{ marginLeft: 10 }} />
+                                                </Button>
+                                            )}
+                                            {this.props.video && this.props.video.status === 'proofreading' && (
+                                                <Button
+                                                    circular
+                                                    color="green"
+                                                    size="tiny"
+                                                    onClick={() => this.setState({ isProofreadingVideoTutorialModalVisible: true })}
+                                                >
+                                                    Proofreading Video Tutorial <Icon name="info circle" style={{ marginLeft: 10 }} />
+                                                </Button>
+                                            )}
+
+                                        </div>
                                         <div style={{ justifyContent: 'flex-end', display: 'flex', alignItems: 'center', color: 'black', paddingTop: '1rem' }} >
                                             <span style={{ marginRight: 10 }}>
                                                 Name Slides
@@ -987,6 +1014,15 @@ class Proofread extends React.Component {
                         }}
                     />
                 )}
+                <CuttingVideoTutorialModal
+                    open={this.state.isCuttingVideoTutorialModalVisible}
+                    onClose={() => this.setState({ isCuttingVideoTutorialModalVisible: false })}
+                />
+
+                <ProofreadingVideoTutorialModal
+                    open={this.state.isProofreadingVideoTutorialModalVisible}
+                    onClose={() => this.setState({ isProofreadingVideoTutorialModalVisible: false })}
+                />
             </div >
         )
     }

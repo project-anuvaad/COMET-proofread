@@ -1,0 +1,26 @@
+.video-stage {
+    display: flex;
+    justify-content: space-around;
+    .label-item {
+        font-size: 1rem;
+        opacity: 0.4 !important;
+        display: inline-block;
+        margin-right: 1rem;
+
+        &.active {
+            opacity: 1 !important;
+            .label {
+                background-color: #0e7ceb !important;
+                opacity: 1 !important;
+            }
+        }
+        .label {
+            opacity: 0.4;
+            background-color: #333333 !important;
+            display: inline-block;
+            margin-right: 0.3rem;
+            color: white !important;
+        }
+    }
+
+}
