@@ -9,7 +9,7 @@ export default class ProofreadingVideoTutorialModal extends React.Component {
         return (
             <TutorialModal
                 {...this.props}
-                title="Learn how to proofread a video"
+                title="Learn how to proofread a video in 3 simple steps"
                 stages={STAGES}
                 stepContent={STEP_CONTENT}
                 numberOfSteps={Object.keys(STEP_CONTENT).length}
