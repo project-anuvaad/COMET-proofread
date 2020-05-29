@@ -731,7 +731,7 @@ class Proofread extends React.Component {
                                                     Cutting Video Tutorial <Icon name="info circle" style={{ marginLeft: 10 }} />
                                                 </Button>
                                             )}
-
+{/* 
                                                 <Button
                                                     circular
                                                     color="green"
@@ -739,7 +739,7 @@ class Proofread extends React.Component {
                                                     onClick={() => this.setState({ isCuttingVideoTutorialModalVisible: true })}
                                                 >
                                                     Cutting Video Tutorial <Icon name="info circle" style={{ marginLeft: 10 }} />
-                                                </Button>
+                                                </Button> */}
                                             {this.props.video && this.props.video.status === 'proofreading' && (
                                                 <Button
                                                     circular
