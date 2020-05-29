@@ -1,5 +1,6 @@
 import React from 'react';
 import { Grid, Icon, Button } from 'semantic-ui-react';
+import VideoPlayer from './VideoPlayer';
 
 export class NoteGrid extends React.Component {
 
@@ -22,7 +23,7 @@ export class NoteGrid extends React.Component {
                         )}
                     </Grid.Column>
                     <Grid.Column width={16}>
-                        <img style={{ }} src={image} width="100%" />
+                        <img style={{}} src={image} width="100%" />
                     </Grid.Column>
                 </Grid.Row>
             </Grid>
@@ -111,16 +112,16 @@ export class MultiStepsGrid extends React.Component {
                                     </h4>
                                     {step.mediaType === 'video' ? (
 
-                                        <video
-                                            ref={(ref) => this[`videoRef${index}`] = ref}
-                                            autoPlay
-                                            width="100%"
-                                            controls
-                                            src={step.mediaUrl}
-                                            onEnded={() => {
-                                                console.log('on ended');
-                                                this.onNextStep()
+                                        <VideoPlayer
+                                            videoRef={(ref) => this[`videoRef${index}`] = ref}
+                                            videoProps={{
+                                                onEnded: () => {
+                                                    console.log('on ended');
+                                                    this.onNextStep()
+                                                },
                                             }}
+                                            autoPlay
+                                            src={step.mediaUrl}
                                         />
 
                                     ) : (

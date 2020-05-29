@@ -1,6 +1,7 @@
 import React from 'react';
 import { Icon } from 'semantic-ui-react';
 import { MultiStepsGrid, NoteGrid, SingleTitleAndContentGrid } from '../TutorialModal/components';
+import VideoPlayer from '../TutorialModal/VideoPlayer';
 
 
 export const STAGES = [
@@ -86,9 +87,8 @@ export const STEP_CONTENT = {
     4: <SingleTitleAndContentGrid
         title="You can adjust the timing of the slide perfectly by dragging the slide."
         content={(
-            <video
+            <VideoPlayer
                 autoPlay
-                controls
                 src="https://tailoredvideowiki.s3-eu-west-1.amazonaws.com/static/tutorials_media/cutting_video/Slide+4+video+mp4.mp4"
                 width="100%"
             />
