@@ -87,6 +87,7 @@ export const STEP_CONTENT = {
         title="You can adjust the timing of the slide perfectly by dragging the slide."
         content={(
             <video
+                autoPlay
                 controls
                 src="https://tailoredvideowiki.s3-eu-west-1.amazonaws.com/static/tutorials_media/cutting_video/Slide+4+video+mp4.mp4"
                 width="100%"
