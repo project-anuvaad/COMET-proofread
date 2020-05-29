@@ -12,7 +12,7 @@ export class NoteGrid extends React.Component {
                 <Grid.Row>
                     <Grid.Column width={16}>
                         {title && (
-                            <h4 style={{ fontSize: '2rem', textAlign: 'center' }}>
+                            <h4 style={{ fontSize: '2rem', textAlign: 'center', marginBottom: '1rem' }}>
                                 {title}
                             </h4>
                         )}
@@ -39,7 +39,7 @@ export class SingleTitleAndContentGrid extends React.Component {
         return (
             <div style={{ width: '100%', margin: 'auto' }}>
                 {title && (
-                    <p style={{ margin: '2rem', textAlign: 'center', fontWeight: 'bold', fontSize: '2rem' }}>
+                    <p style={{ margin: '2rem', textAlign: 'center', fontWeight: 'bold', fontSize: '2rem', marginBottom: '1rem' }}>
                         {title}
                     </p>
                 )}
