@@ -11,18 +11,18 @@ export class NoteGrid extends React.Component {
                 <Grid.Row>
                     <Grid.Column width={16}>
                         {title && (
-                            <h4>
+                            <h4 style={{ fontSize: '2rem', textAlign: 'center' }}>
                                 {title}
                             </h4>
                         )}
                         {note && (
-                            <p>
+                            <p style={{ textAlign: 'center', marginBottom: '1rem' }}>
                                 {note}
                             </p>
                         )}
                     </Grid.Column>
                     <Grid.Column width={16}>
-                        <img src={image} width="100%" />
+                        <img style={{ }} src={image} width="100%" />
                     </Grid.Column>
                 </Grid.Row>
             </Grid>
@@ -38,7 +38,7 @@ export class SingleTitleAndContentGrid extends React.Component {
         return (
             <div style={{ width: '100%', margin: 'auto' }}>
                 {title && (
-                    <p style={{ margin: '2rem', textAlign: 'center' }}>
+                    <p style={{ margin: '2rem', textAlign: 'center', fontWeight: 'bold', fontSize: '2rem' }}>
                         {title}
                     </p>
                 )}
@@ -105,7 +105,7 @@ export class MultiStepsGrid extends React.Component {
                                 <Grid.Column
                                     key={`multi-step-grid-step-${step.title}`}
                                     width={8}
-                                    style={{ padding: '2rem', paddingBottom: 0 }}>
+                                    style={{ padding: '1rem', paddingBottom: 0 }}>
                                     <h4>
                                         {step.title}
                                     </h4>
