@@ -20,24 +20,40 @@ export const STAGES = [
 ];
 
 export const STEP_CONTENT = {
-    1: <NoteGrid
-        title={`Click on the "play" button to listen to the slide.`}
-        image="https://tailoredvideowiki.s3-eu-west-1.amazonaws.com/static/tutorials_media/proofreading_video/proofread+1.jpg"
-    />, 
+    1: function renderItem() {
+        return (
+            <NoteGrid
+                title={`Click on the "play" button to listen to the slide.`}
+                image="https://tailoredvideowiki.s3-eu-west-1.amazonaws.com/static/tutorials_media/proofreading_video/proofread+1.jpg"
+            />
+        )
+    },
 
-    2: <NoteGrid
-        title={`Write/Correct the text here.`}
-        image="https://tailoredvideowiki.s3-eu-west-1.amazonaws.com/static/tutorials_media/proofreading_video/proofread+2.jpg"
-    />, 
+    2: function renderItem() {
+        return (
+            <NoteGrid
+                title={`Write/Correct the text here.`}
+                image="https://tailoredvideowiki.s3-eu-west-1.amazonaws.com/static/tutorials_media/proofreading_video/proofread+2.jpg"
+            />
+        )
+    },
 
-    3: <NoteGrid
-        title={`Go to the next slide.`}
-        image="https://tailoredvideowiki.s3-eu-west-1.amazonaws.com/static/tutorials_media/proofreading_video/proofread+3.jpg"
-    />, 
-    
-    4: <NoteGrid
-        title="Note:"
-        note={`When you have completed all the slides (100%) - Click on "Save and Complete"`}
-        image="https://tailoredvideowiki.s3-eu-west-1.amazonaws.com/static/tutorials_media/proofreading_video/proofread+4.jpg"
-    />, 
+    3: function renderItem() {
+        return (
+            <NoteGrid
+                title={`Go to the next slide.`}
+                image="https://tailoredvideowiki.s3-eu-west-1.amazonaws.com/static/tutorials_media/proofreading_video/proofread+3.jpg"
+            />
+        )
+    },
+
+    4: function renderItem() {
+        return (
+            <NoteGrid
+                title="Note:"
+                note={`When you have completed all the slides (100%) - Click on "Save and Complete"`}
+                image="https://tailoredvideowiki.s3-eu-west-1.amazonaws.com/static/tutorials_media/proofreading_video/proofread+4.jpg"
+            />
+        )
+    },
 }

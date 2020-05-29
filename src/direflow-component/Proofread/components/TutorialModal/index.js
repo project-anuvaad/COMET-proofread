@@ -5,15 +5,17 @@ import styles from './style.scss';
 import classnames from 'classnames';
 import VideoStages from '../VideoStages';
 import { Styled } from 'direflow-component';
+import AnimatedButton from './AnimatedButton';
 
-export default class  TutorialModal extends React.Component {
+export default class TutorialModal extends React.Component {
 
     state = {
         currentStep: 1,
+        nextButtonAnimating: false,
     }
 
     toggleOpen = () => {
-        this.setState({ currentStep: 1 })
+        this.setState({ currentStep: 1, nextButtonAnimating: false, })
         if (this.props.open) {
             this.props.onClose();
         } else {
@@ -29,6 +31,7 @@ export default class  TutorialModal extends React.Component {
         } else {
             this.setState({ currentStep: 1 })
         }
+        this.setState({ nextButtonAnimating: false })
     }
 
     onNext = () => {
@@ -40,6 +43,7 @@ export default class  TutorialModal extends React.Component {
             this.setState({ currentStep: 1 });
             this.toggleOpen();
         }
+        this.setState({ nextButtonAnimating: false })
     }
 
     getActivestage = () => {
@@ -54,8 +58,13 @@ export default class  TutorialModal extends React.Component {
         return activeStage.title;
     }
 
+    onStepEnded = () => {
+        this.setState({ nextButtonAnimating: true });
+    }
+
     render() {
-        const { title, stages, stepContent, numberOfSteps, open } = this.props;
+        const { title, stages, stepContent, numberOfSteps, open } = this.props
+        const ActiveStep = stepContent[this.state.currentStep]({ onEnded: this.onStepEnded });
 
         return (
             <Styled styles={styles}>
@@ -67,7 +76,7 @@ export default class  TutorialModal extends React.Component {
                     <Modal.Header>
                         <h3>
                             {title}
-                        <Button
+                            <Button
                                 circular
                                 basic
                                 icon="close"
@@ -79,7 +88,7 @@ export default class  TutorialModal extends React.Component {
                         </div>
                     </Modal.Header>
                     <Modal.Content>
-                        {stepContent[this.state.currentStep]}
+                        {ActiveStep}
                         <div className="bottom-content">
 
                             <div>
@@ -91,10 +100,17 @@ export default class  TutorialModal extends React.Component {
                                 <Button disabled={this.state.currentStep === 1} className="back" circular onClick={this.onBack}>
                                     Back
                                 </Button>
-                                <Button circular primary className="next" onClick={this.onNext}>
+                                <AnimatedButton
+                                    animating={this.state.nextButtonAnimating}
+                                    animation="moema"
+                                    animationInterval={2000}
+                                    circular
+                                    primary
+                                    className="next"
+                                    onClick={this.onNext}
+                                >
                                     {this.state.currentStep < numberOfSteps ? 'Next' : 'Done'}
-                                </Button>
-
+                                </AnimatedButton>
                             </div>
                         </div>
                     </Modal.Content>

@@ -75,6 +75,7 @@ export class MultiStepsGrid extends React.Component {
             } else if (nextStep.mediaType === 'video') {
             }
         } else {
+            this.props.onEnded();
             this.setState({ ended: true })
         }
     }
@@ -137,3 +138,6 @@ export class MultiStepsGrid extends React.Component {
     }
 }
 
+MultiStepsGrid.defaultProps = {
+    onEnded: () => {},
+}
