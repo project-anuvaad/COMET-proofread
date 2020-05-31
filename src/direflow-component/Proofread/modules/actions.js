@@ -357,6 +357,23 @@ export const setSubtitles = (subtitles) => ({
 })
 
 
+export const automaticallyBreakArticle = articleId => (dispatch) => {
+    dispatch(setUpdateLoading(true));
+    requestAgent
+        .post(Api.article.automaticallyBreakArticle(articleId))
+        .then(() => {
+            dispatch(setUpdateLoading(false));
+            NotificationService.success('Video is broken successfully');
+            setTimeout(() => {
+                window.location.reload();
+            }, 2000);
+        })
+        .catch(err => {
+            dispatch(setUpdateLoading(false));
+            NotificationService.responseError(err)
+        })
+} 
+
 export const updateSubslide = (slidePosition, subslidePosition, changes) => (dispatch, getState) => {
     dispatch(updateSubslideLoading());
     dispatch(setUpdateLoading(true));

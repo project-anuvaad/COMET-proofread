@@ -46,6 +46,7 @@ class Proofread extends React.Component {
         isTranscriptionVersionModalVisible: false,
         isCuttingVideoTutorialModalVisible: false,
         isProofreadingVideoTutorialModalVisible: false,
+        isAutomatedVideoBreakingModalOpen: false,
     }
 
 
@@ -409,6 +410,28 @@ class Proofread extends React.Component {
             </Modal>
         )
     }
+    onAutomatedVideoBreaking = () => {
+        this.props.automaticallyBreakArticle(this.props.article._id);
+    }
+
+    renderAutomatedVideoBreakingModal = () => (
+        <Modal
+            size="tiny"
+            open={this.state.isAutomatedVideoBreakingModalOpen}
+            onClose={() => this.setState({ isAutomatedVideoBreakingModalOpen: false })}
+        >
+            <Modal.Header>
+                Break video automatically
+            </Modal.Header>
+            <Modal.Content>
+                Automatic breaking up of video decreases the quality of the video. Do you still want to go ahead?
+            </Modal.Content>
+            <Modal.Actions>
+                <Button onClick={() => this.setState({ isAutomatedVideoBreakingModalOpen: false })} >Cancel</Button>
+                <Button color="blue" onClick={() => this.onAutomatedVideoBreaking()} >Yes</Button>
+            </Modal.Actions>
+        </Modal>
+    )
 
     renderInstructions = () => {
         return (
@@ -731,15 +754,6 @@ class Proofread extends React.Component {
                                                     Cutting Video Tutorial <Icon name="info circle" style={{ marginLeft: 10 }} />
                                                 </Button>
                                             )}
-{/* 
-                                                <Button
-                                                    circular
-                                                    color="green"
-                                                    size="tiny"
-                                                    onClick={() => this.setState({ isCuttingVideoTutorialModalVisible: true })}
-                                                >
-                                                    Cutting Video Tutorial <Icon name="info circle" style={{ marginLeft: 10 }} />
-                                                </Button> */}
                                             {this.props.video && this.props.video.status === 'proofreading' && (
                                                 <Button
                                                     circular
@@ -751,6 +765,18 @@ class Proofread extends React.Component {
                                                 </Button>
                                             )}
 
+                                        </div>
+                                        <div style={{ display: 'flex', justifyContent: 'flex-end', paddingTop: '1rem' }}>
+                                            {this.props.video && this.props.video.status === 'cutting' && (
+                                                <Button
+                                                    circular
+                                                    color="green"
+                                                    size="tiny"
+                                                    onClick={() => this.setState({ isAutomatedVideoBreakingModalOpen: true })}
+                                                >
+                                                    Automated video breaking <Icon name="cut" style={{ marginLeft: 10 }} />
+                                                </Button>
+                                            )}
                                         </div>
                                         <div style={{ justifyContent: 'flex-end', display: 'flex', alignItems: 'center', color: 'black', paddingTop: '1rem' }} >
                                             <span style={{ marginRight: 10 }}>
@@ -1040,6 +1066,7 @@ class Proofread extends React.Component {
                     open={this.state.isProofreadingVideoTutorialModalVisible}
                     onClose={() => this.setState({ isProofreadingVideoTutorialModalVisible: false })}
                 />
+                {this.renderAutomatedVideoBreakingModal()}
             </div >
         )
     }
@@ -1131,6 +1158,7 @@ const mapDispatchToProps = (dispatch) => ({
     fetchTranscriptionVersions: id => dispatch(actions.fetchTranscriptionVersions(id)),
     setTranscriptionVersionForSubslide: params => dispatch(actions.setTranscriptionVersionForSubslide(params)),
     setTranscriptionVersionForAllSubslides: (params) => dispatch(actions.setTranscriptionVersionForAllSubslides(params)),
+    automaticallyBreakArticle: (articleId) => dispatch(actions.automaticallyBreakArticle(articleId)),
 
     updateSubslide: (slidePosition, subslidePosition, changes) => dispatch(actions.updateSubslide(slidePosition, subslidePosition, changes)),
     onSplitSubslide: (slidePosition, subslidePosition, wordIndex, currentTime) => dispatch(actions.splitSubslide(slidePosition, subslidePosition, wordIndex, currentTime)),

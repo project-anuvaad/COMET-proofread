@@ -37,6 +37,8 @@ export default {
         getTranscriptionVersions: id => `${getApiRoot()}/article/transcriptionVersions?videoId=${id}`,
         setTranscriptionVersionForSubslide: id => `${getApiRoot()}/article/${id}/transcriptionVersions/setTranscriptionVersionForSubslide`,
         setTranscriptionVersionForAllSubslides: id => `${getApiRoot()}/article/${id}/transcriptionVersions/setTranscriptionVersionForAllSubslides`,
+        automaticallyBreakArticle: id => `${getApiRoot()}/article/${id}/automatedBreak`,
+        
         updateSubslide: (articleId, slidePosition, subslidePosition) => `${getApiRoot()}/article/${articleId}/slides/${slidePosition}/content/${subslidePosition}`,
         splitSubslide: (articleId, slidePosition, subslidePosition) => `${getApiRoot()}/article/${articleId}/slides/${slidePosition}/content/${subslidePosition}/split`,
         addSubslide: (articleId, slidePosition, subslidePosition) => `${getApiRoot()}/article/${articleId}/slides/${slidePosition}/content/${subslidePosition}`,
