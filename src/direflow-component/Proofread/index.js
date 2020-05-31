@@ -1,8 +1,9 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import { Progress, Grid, Dropdown, Button, Icon, Modal, Input, Popup, Checkbox } from 'semantic-ui-react';
+import { Progress, Grid, Dropdown, Button, Icon, Modal, Input, Popup, Checkbox, Dimmer, Loader } from 'semantic-ui-react';
 import Lottie from 'react-lottie';
 import Switch from 'react-switch';
+import robotLottie from './lottie/robot.json';
 
 import * as actions from './modules/actions';
 import ProgressBoxes from './components/ProgressBoxes';
@@ -26,6 +27,19 @@ import TranscriptionVersionSelectModal from './components/TranscriptionVersionSe
 import CuttingVideoTutorialModal from './components/CuttingVideoTutorialModal';
 import ProofreadingVideoTutorialModal from './components/ProofreadingVideoTutorialModal';
 
+const renderRobotLoader = () => {
+    const defaultOptions = {
+        loop: false,
+        autoplay: true,
+        animationData: robotLottie,
+        rendererSettings: {
+            preserveAspectRatio: 'xMidYMid slice'
+        }
+    };
+    return (
+        <Lottie options={defaultOptions} height={100} width={100} />
+    )
+}
 class Proofread extends React.Component {
 
     state = {
@@ -425,10 +439,19 @@ class Proofread extends React.Component {
             </Modal.Header>
             <Modal.Content>
                 Automatic breaking up of video decreases the quality of the video. Do you still want to go ahead?
+                <br />
+                <small>
+                    <strong>
+                        Note: All current progress will be lost
+                    </strong>
+                </small>
             </Modal.Content>
             <Modal.Actions>
                 <Button onClick={() => this.setState({ isAutomatedVideoBreakingModalOpen: false })} >Cancel</Button>
-                <Button color="blue" onClick={() => this.onAutomatedVideoBreaking()} >Yes</Button>
+                <Button color="blue" onClick={() => {
+                    this.onAutomatedVideoBreaking();
+                    this.setState({ isAutomatedVideoBreakingModalOpen: false });
+                }} >Yes</Button>
             </Modal.Actions>
         </Modal>
     )
@@ -916,7 +939,11 @@ class Proofread extends React.Component {
                         <Grid.Column width={7}>
                             <div>
                                 {this.props.video && this.props.video.status === 'proofreading' && this.props.article && this.props.article.speakersProfile && this.props.selectedSubtitle && this.props.selectedSubtitle.subtitle ? (
-                                    <div style={{ width: '100%' }}>
+                                    <div style={{ width: '100%', position: 'relative' }}>
+                                        {/* <Dimmer active={versionedSubslides} inverted>
+                                            <Loader inverted>Working on AI transcription</Loader>
+                                        </Dimmer> */}
+                                       
                                         <SubtitleForm
                                             title={slideTitle}
                                             loading={this.props.updateSubslideState === 'loading'}
@@ -946,6 +973,13 @@ class Proofread extends React.Component {
                                             }}
                                             onDelete={() => this.onSubslideDelete(this.props.selectedSubtitle.subtitle, this.props.selectedSubtitle.subtitleIndex)}
                                         />
+                                         {versionedSubslides && versionedSubslides.length > 0 && versionedSubslides.some(s => s.AITranscriptionLoading) && (
+
+                                            <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', flexDirection: 'column' }}>
+                                                {renderRobotLoader()}
+                                                <span>Working on AI Transcription, please wait...</span>
+                                            </div>
+                                        )}
                                     </div>
                                 ) : null}
 
