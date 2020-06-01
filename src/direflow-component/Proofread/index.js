@@ -740,6 +740,44 @@ class Proofread extends React.Component {
                                     </Button>
                                 </a>
                             </div>
+                            <div style={{ display: 'flex', justifyContent: 'flex-start', paddingTop: '1rem' }}>
+                                {this.props.video && this.props.video.status === 'cutting' && (
+                                    <Button
+                                        circular
+                                        color="green"
+                                        size="tiny"
+                                        onClick={() => this.setState({ isCuttingVideoTutorialModalVisible: true })}
+                                    >
+                                        <Icon name="info circle" style={{ marginRight: 10 }} />
+                                        Cutting Video Tutorial 
+                                    </Button>
+                                )}
+                                {this.props.video && this.props.video.status === 'proofreading' && (
+                                    <Button
+                                        circular
+                                        color="green"
+                                        size="tiny"
+                                        onClick={() => this.setState({ isProofreadingVideoTutorialModalVisible: true })}
+                                    >
+                                        <Icon name="info circle" style={{ marginRight: 10 }} />
+                                        Proofreading Video Tutorial 
+                                    </Button>
+                                )}
+
+                            </div>
+                            <div style={{ display: 'flex', justifyContent: 'flex-start', paddingTop: '1rem' }}>
+                                {this.props.video && this.props.video.status === 'cutting' && (
+                                    <Button
+                                        circular
+                                        color="green"
+                                        size="tiny"
+                                        onClick={() => this.setState({ isAutomatedVideoBreakingModalOpen: true })}
+                                    >
+                                        <Icon name="cut" style={{ marginRight: 10 }} />
+                                        Automated video breaking 
+                                    </Button>
+                                )}
+                            </div>
 
                         </Grid.Column>
                         <Grid.Column width={8} />
@@ -766,41 +804,7 @@ class Proofread extends React.Component {
                                             {this.renderConvertConfirmModal()}
                                             {this.renderDoneConfirmModal()}
                                         </div>
-                                        <div style={{ display: 'flex', justifyContent: 'flex-end', paddingTop: '1rem' }}>
-                                            {this.props.video && this.props.video.status === 'cutting' && (
-                                                <Button
-                                                    circular
-                                                    color="green"
-                                                    size="tiny"
-                                                    onClick={() => this.setState({ isCuttingVideoTutorialModalVisible: true })}
-                                                >
-                                                    Cutting Video Tutorial <Icon name="info circle" style={{ marginLeft: 10 }} />
-                                                </Button>
-                                            )}
-                                            {this.props.video && this.props.video.status === 'proofreading' && (
-                                                <Button
-                                                    circular
-                                                    color="green"
-                                                    size="tiny"
-                                                    onClick={() => this.setState({ isProofreadingVideoTutorialModalVisible: true })}
-                                                >
-                                                    Proofreading Video Tutorial <Icon name="info circle" style={{ marginLeft: 10 }} />
-                                                </Button>
-                                            )}
 
-                                        </div>
-                                        <div style={{ display: 'flex', justifyContent: 'flex-end', paddingTop: '1rem' }}>
-                                            {this.props.video && this.props.video.status === 'cutting' && (
-                                                <Button
-                                                    circular
-                                                    color="green"
-                                                    size="tiny"
-                                                    onClick={() => this.setState({ isAutomatedVideoBreakingModalOpen: true })}
-                                                >
-                                                    Automated video breaking <Icon name="cut" style={{ marginLeft: 10 }} />
-                                                </Button>
-                                            )}
-                                        </div>
                                         <div style={{ justifyContent: 'flex-end', display: 'flex', alignItems: 'center', color: 'black', paddingTop: '1rem' }} >
                                             <span style={{ marginRight: 10 }}>
                                                 Name Slides
@@ -943,7 +947,7 @@ class Proofread extends React.Component {
                                         {/* <Dimmer active={versionedSubslides} inverted>
                                             <Loader inverted>Working on AI transcription</Loader>
                                         </Dimmer> */}
-                                       
+
                                         <SubtitleForm
                                             title={slideTitle}
                                             loading={this.props.updateSubslideState === 'loading'}
@@ -973,7 +977,7 @@ class Proofread extends React.Component {
                                             }}
                                             onDelete={() => this.onSubslideDelete(this.props.selectedSubtitle.subtitle, this.props.selectedSubtitle.subtitleIndex)}
                                         />
-                                         {versionedSubslides && versionedSubslides.length > 0 && versionedSubslides.some(s => s.AITranscriptionLoading) && (
+                                        {versionedSubslides && versionedSubslides.length > 0 && versionedSubslides.some(s => s.AITranscriptionLoading) && (
 
                                             <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', flexDirection: 'column' }}>
                                                 {renderRobotLoader()}
