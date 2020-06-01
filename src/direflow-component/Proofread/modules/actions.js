@@ -373,6 +373,19 @@ export const automaticallyBreakArticle = articleId => (dispatch) => {
             NotificationService.responseError(err)
         })
 } 
+export const subscribeToAITranscribeFinish = articleId => (dispatch) => {
+    dispatch(setUpdateLoading(true));
+    requestAgent
+        .post(Api.article.subscribeAITranscribeFinish(articleId))
+        .then(() => {
+            dispatch(setUpdateLoading(false));
+            NotificationService.success('You\'ll be notified once AI Transcription is done');
+        })
+        .catch(err => {
+            dispatch(setUpdateLoading(false));
+            NotificationService.responseError(err)
+        })
+}
 
 export const updateSubslide = (slidePosition, subslidePosition, changes) => (dispatch, getState) => {
     dispatch(updateSubslideLoading());

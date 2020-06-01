@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { version } from 'react';
 import { connect } from 'react-redux';
 import { Progress, Grid, Dropdown, Button, Icon, Modal, Input, Popup, Checkbox, Dimmer, Loader } from 'semantic-ui-react';
 import Lottie from 'react-lottie';
@@ -60,6 +60,7 @@ class Proofread extends React.Component {
         isTranscriptionVersionModalVisible: false,
         isCuttingVideoTutorialModalVisible: false,
         isProofreadingVideoTutorialModalVisible: false,
+        isSubscribeToAITranscribeFinishModalVisible: false,
         isAutomatedVideoBreakingModalOpen: false,
     }
 
@@ -456,6 +457,27 @@ class Proofread extends React.Component {
         </Modal>
     )
 
+    renderSubscribeToAITranscribeFinishModal = () => (
+        <Modal
+            size="tiny"
+            open={this.state.isSubscribeToAITranscribeFinishModalVisible}
+            onClose={() => this.setState({ isSubscribeToAITranscribeFinishModalVisible: false })}
+        >
+            <Modal.Header>
+                Notification Subscribtion
+            </Modal.Header>
+            <Modal.Content>
+                Do you want to get notified when the AI Transcription is done?
+            </Modal.Content>
+            <Modal.Actions>
+                <Button onClick={() => this.setState({ isAutomatedVideoBreakingModalOpen: false })} >No</Button>
+                <Button color="blue" onClick={() => {
+                    this.props.subscribeToAITranscribeFinish(this.props.article._id);
+                    this.setState({ isSubscribeToAITranscribeFinishModalVisible: false });
+                }} >Yes</Button>
+            </Modal.Actions>
+        </Modal>
+    )
     renderInstructions = () => {
         return (
             <div
@@ -749,7 +771,7 @@ class Proofread extends React.Component {
                                         onClick={() => this.setState({ isCuttingVideoTutorialModalVisible: true })}
                                     >
                                         <Icon name="info circle" style={{ marginRight: 10 }} />
-                                        Cutting Video Tutorial 
+                                        Cutting Video Tutorial
                                     </Button>
                                 )}
                                 {this.props.video && this.props.video.status === 'proofreading' && (
@@ -760,7 +782,7 @@ class Proofread extends React.Component {
                                         onClick={() => this.setState({ isProofreadingVideoTutorialModalVisible: true })}
                                     >
                                         <Icon name="info circle" style={{ marginRight: 10 }} />
-                                        Proofreading Video Tutorial 
+                                        Proofreading Video Tutorial
                                     </Button>
                                 )}
 
@@ -774,7 +796,7 @@ class Proofread extends React.Component {
                                         onClick={() => this.setState({ isAutomatedVideoBreakingModalOpen: true })}
                                     >
                                         <Icon name="cut" style={{ marginRight: 10 }} />
-                                        Automated video breaking 
+                                        Automated video breaking
                                     </Button>
                                 )}
                             </div>
@@ -1102,8 +1124,16 @@ class Proofread extends React.Component {
 
                 <ProofreadingVideoTutorialModal
                     open={this.state.isProofreadingVideoTutorialModalVisible}
-                    onClose={() => this.setState({ isProofreadingVideoTutorialModalVisible: false })}
+                    onClose={() => {
+                        this.setState({ isProofreadingVideoTutorialModalVisible: false });
+                        if (versionedSubslides && versionedSubslides.length > 0 && versionedSubslides.some(s => s.AITranscriptionLoading) &&
+                            this.props.article && this.props.article.AITranscriptionFinishSubscribers && this.props.article.AITranscriptionFinishSubscribers.indexOf(this.props.user._id) === -1
+                        ) {
+                            this.setState({ isSubscribeToAITranscribeFinishModalVisible: true });
+                        }
+                    }}
                 />
+                {this.renderSubscribeToAITranscribeFinishModal()}
                 {this.renderAutomatedVideoBreakingModal()}
             </div >
         )
@@ -1197,6 +1227,7 @@ const mapDispatchToProps = (dispatch) => ({
     setTranscriptionVersionForSubslide: params => dispatch(actions.setTranscriptionVersionForSubslide(params)),
     setTranscriptionVersionForAllSubslides: (params) => dispatch(actions.setTranscriptionVersionForAllSubslides(params)),
     automaticallyBreakArticle: (articleId) => dispatch(actions.automaticallyBreakArticle(articleId)),
+    subscribeToAITranscribeFinish: (articleId) => dispatch(actions.subscribeToAITranscribeFinish(articleId)),
 
     updateSubslide: (slidePosition, subslidePosition, changes) => dispatch(actions.updateSubslide(slidePosition, subslidePosition, changes)),
     onSplitSubslide: (slidePosition, subslidePosition, wordIndex, currentTime) => dispatch(actions.splitSubslide(slidePosition, subslidePosition, wordIndex, currentTime)),
