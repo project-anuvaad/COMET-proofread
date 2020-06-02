@@ -280,7 +280,7 @@ class Proofread extends React.Component {
     }
 
     isEditable = () => {
-        return this.props.video && this.props.video.status === 'cutting'
+        return this.props.video
     }
 
     getVideoStatus = () => {
@@ -337,10 +337,15 @@ class Proofread extends React.Component {
         const subslidePosition = subtitle.subslidePosition;
         const subslides = [];
         transcriptionVersions.forEach(article => {
-            const vsubslide = article.slides.find(s => s.position === slidePosition).content.find(s => s.position === subslidePosition);
-            vsubslide.articleId = article._id;
-            vsubslide.isAITranscription = article.isAITranscription;
-            subslides.push(vsubslide);
+            const vslide = article.slides.find(s => s.position === slidePosition);
+            if (vslide) {
+                const vsubslide = vslide.content.find(s => s.position === subslidePosition);
+                if (vsubslide) {
+                    vsubslide.articleId = article._id;
+                    vsubslide.isAITranscription = article.isAITranscription;
+                    subslides.push(vsubslide);
+                }
+            }
         });
         return subslides;
     }
@@ -747,7 +752,7 @@ class Proofread extends React.Component {
         if (versionedSubslides && versionedSubslides.length > 0 && selectedSubtitle && selectedSubtitle.subtitle) {
             const selectedVersion = versionedSubslides.findIndex(vs => vs.articleId === selectedSubtitle.subtitle.translationVersionArticleId);
             if (selectedVersion !== -1) {
-                slideTitle = <span>Slide {this.props.selectedSubtitle.subtitleIndex + 1} -<small> Translator {selectedVersion + 1}</small> </span>;
+                slideTitle = <span>Slide {this.props.selectedSubtitle.subtitleIndex + 1} -<small> Transcriber {selectedVersion + 1}</small> </span>;
             }
         }
         return (
