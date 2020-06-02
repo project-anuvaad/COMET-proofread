@@ -170,6 +170,11 @@ class VideoTimelineV2 extends React.Component {
 
                 drawCanvas(this.canvasRef, 6000, 40, duration, startTime, endTime);
                 return { deltas: newDeltas, deltaMS, currentTime };
+            }, () => {
+                // console.log('trick trick')
+                // DONT ASK ABOUT THIS, IT JUST WORKS!!
+                // Wasted Time: 2 hours
+                this.handleCurrentTimeChange(currentTime + 10, duration)
             })
         } else {
             this.setState({ currentTime });
