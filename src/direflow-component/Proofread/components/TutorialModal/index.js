@@ -1,6 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import { Modal, Button } from 'semantic-ui-react';
+import { Modal, Button, Checkbox } from 'semantic-ui-react';
 import styles from './style.scss';
 import classnames from 'classnames';
 import VideoStages from '../VideoStages';
@@ -88,29 +88,41 @@ export default class TutorialModal extends React.Component {
                         </div>
                     </Modal.Header>
                     <Modal.Content>
-                        {ActiveStep}
-                        <div className="bottom-content">
 
-                            <div>
-                                {[...Array(numberOfSteps).keys()].map(s => (
-                                    <span className={classnames({ 'rectangle': true, 'active': s + 1 === this.state.currentStep })} ></span>
-                                ))}
+                        <div>
+                            {ActiveStep}
+                        </div>
+                        <div className="bottom-content">
+                            <div className="skip-on-start">
+                                <Checkbox
+                                    label="Show this tutorial on startup"
+                                    checked={this.props.showOnStartup}
+                                    onChange={(e, { checked }) => this.props.onChangeShowOnStartup(checked)}
+                                />
                             </div>
-                            <div className="nav-buttons">
-                                <Button disabled={this.state.currentStep === 1} className="back" circular onClick={this.onBack}>
-                                    Back
-                                </Button>
-                                <AnimatedButton
-                                    animating={this.state.nextButtonAnimating}
-                                    animation="moema"
-                                    animationInterval={2000}
-                                    circular
-                                    primary
-                                    className="next"
-                                    onClick={this.onNext}
-                                >
-                                    {this.state.currentStep < numberOfSteps ? 'Next' : 'Done'}
-                                </AnimatedButton>
+                            <div className="nav-buttons-container">
+
+                                <div>
+                                    {[...Array(numberOfSteps).keys()].map(s => (
+                                        <span className={classnames({ 'rectangle': true, 'active': s + 1 === this.state.currentStep })} ></span>
+                                    ))}
+                                </div>
+                                <div className="nav-buttons">
+                                    <Button disabled={this.state.currentStep === 1} className="back" circular onClick={this.onBack}>
+                                        Back
+                                    </Button>
+                                    <AnimatedButton
+                                        animating={this.state.nextButtonAnimating}
+                                        animation="moema"
+                                        animationInterval={2000}
+                                        circular
+                                        primary
+                                        className="next"
+                                        onClick={this.onNext}
+                                    >
+                                        {this.state.currentStep < numberOfSteps ? 'Next' : 'Done'}
+                                    </AnimatedButton>
+                                </div>
                             </div>
                         </div>
                     </Modal.Content>

@@ -18,7 +18,7 @@
     .content {
         padding: 3rem !important;
         padding-top: 0 !important;
-        padding-bottom: 6rem !important;
+        padding-bottom: 8rem !important;
         // padding-bottom: 3rem !important;
         min-height: 500px;
 
@@ -26,13 +26,16 @@
         // align-items: center;
         justify-content: center;
         .bottom-content {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;;
             position: absolute;
             right: 2rem;
             left: 2rem;
             bottom: 2rem;
+        }
+        .nav-buttons-container {
+
+            display: flex;
+            justify-content: space-between;
+            align-items: center;;
         }
         .nav-buttons {
             button {
@@ -67,9 +70,10 @@
         }
 
         .skip-on-start {
-            position: absolute;
-            bottom: -2rem;
-            right: 0;       
+            text-align: right;
+            margin-bottom: 1rem;
+            position: relative;
+            right: 10px;
         }
     }
     .label-item {

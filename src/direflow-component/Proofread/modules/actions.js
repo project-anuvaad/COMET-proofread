@@ -93,6 +93,22 @@ const setOrganizationData = organization => ({
     type: actionTypes.SET_ORGANIZATION_DATA,
     payload: organization,
 })
+export const fetchData = ({videoId, apiKey}) => (dispatch, getState) => {
+
+    requestAgent
+    .get(Api.user.getUserDetails())
+    .then(({ body }) => {
+        dispatch(setUserData(body));
+        
+        dispatch(fetchOrganizationData(apiKey));
+        dispatch(fetchVideoById(videoId))
+        dispatch(fetchArticleByVideoId(videoId));
+        dispatch(fetchTranscriptionVersions(videoId))
+    })
+    .catch(err => {
+        console.log('error getting user data', err);
+    })
+}
 
 export const fetchUserData = () => dispatch => {
     requestAgent
@@ -208,6 +224,33 @@ export const markVideoAsDone = (videoId, articleId) => (dispatch, getState) => {
             NotificationService.responseError(err);
         })
 }
+export const updateShowCuttingTutorial = (showCuttingTutorial) => (dispatch, getState) => {
+    requestAgent
+        .patch(Api.user.updateShowCuttingTutorial(), { showCuttingTutorial })
+        .then(() => {
+            const { user } = getState()[moduleName];
+            user.showCuttingTutorial = showCuttingTutorial;
+            dispatch(setUserData({ ...user }))
+        })
+        .catch(err => {
+            console.log(err);
+            NotificationService.responseError(err);
+        })
+}
+
+export const updateShowProofreadingTutorial = (showProofreadingTutorial) => (dispatch, getState) => {
+    requestAgent
+        .patch(Api.user.updateShowProofreadingTutorial(), { showProofreadingTutorial })
+        .then(() => {
+            const { user } = getState()[moduleName];
+            user.showProofreadingTutorial = showProofreadingTutorial;
+            dispatch(setUserData({ ...user }))
+        })
+        .catch(err => {
+            console.log(err);
+            NotificationService.responseError(err);
+        })
+}
 
 export const updateToEnglish = (toEnglish) => (dispatch, getState) => {
     const article = { ...getState()[moduleName].article };
@@ -234,22 +277,22 @@ export const fetchArticleByVideoId = videoId => dispatch => {
         })
         .then(res => {
             const video = res.body;
-            if (video.status === 'proofreading') {
-                const newSlides = [];
-                article.slides.forEach(slide => {
-                    const content = [];
-                    slide.content.forEach(subslide => {
-                        if (subslide.speakerProfile && subslide.speakerProfile.speakerNumber !== -1) {
-                            content.push(subslide);
-                        }
-                    })
-                    newSlides.push({
-                        ...slide,
-                        content,
-                    })
-                })
-                article.slides = newSlides;
-            }
+            // if (video.status === 'proofreading') {
+            //     const newSlides = [];
+            //     article.slides.forEach(slide => {
+            //         const content = [];
+            //         slide.content.forEach(subslide => {
+            //             if (subslide.speakerProfile && subslide.speakerProfile.speakerNumber !== -1) {
+            //                 content.push(subslide);
+            //             }
+            //         })
+            //         newSlides.push({
+            //             ...slide,
+            //             content,
+            //         })
+            //     })
+            //     article.slides = newSlides;
+            // }
 
             dispatch(fetchArticleSuccess(article));
 

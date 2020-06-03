@@ -114,7 +114,7 @@ export default class SubtitleForm extends React.Component {
                         <TextArea
                             style={{ padding: 20, paddingRight: 40, width: '100%', border: 'none' }}
                             rows={6}
-                            placeholder="Listen to the video and type your text here"
+                            placeholder={this.props.showTextArea ? "Listen to the video and type your text here": '' }
                             disabled={!this.props.showTextArea}
                             value={this.state.text}
                             onChange={(e) => this.setState({ text: e.target.value })}

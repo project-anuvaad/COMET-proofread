@@ -99,6 +99,8 @@ export default {
         resetPassword: () => `${getApiRoot()}/user/resetPassword`,
         getUserDetails: () => `${getApiRoot()}/user/getUserDetails`,
         updatePassword: (userId) => `${getApiRoot()}/user/${userId}/password`,
+        updateShowCuttingTutorial: () => `${getApiRoot()}/user/showCuttingTutorial`,
+        updateShowProofreadingTutorial: () => `${getApiRoot()}/user/showProofreadingTutorial`,
     },
     invitations: {
         respondToOrganizationInvitation: (organizationId) => `${getApiRoot()}/invitations/organization/${organizationId}/invitations/respond`,

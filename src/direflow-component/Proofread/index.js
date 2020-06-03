@@ -68,17 +68,18 @@ class Proofread extends React.Component {
     componentWillMount() {
         this.props.resetArticleState();
         this.props.resetState();
-        this.startPoller();
-        this.props.fetchUserData()
-        this.props.fetchOrganizationData(this.props.apiKey)
-        this.props.fetchArticleByVideoId(this.props.videoId);
-        this.props.fetchTranscriptionVersions(this.props.videoId);
+        this.props.fetchData({ videoId: this.props.videoId, apiKey: this.props.apiKey });
+        // this.props.fetchVideoById(this.props.videoId);
+        // this.props.fetchUserData()
+        // this.props.fetchOrganizationData(this.props.apiKey)
+        // this.props.fetchArticleByVideoId(this.props.videoId);
+        // this.props.fetchTranscriptionVersions(this.props.videoId);
 
         this.props.setToEnglish(false);
     }
 
     componentWillUnmount() {
-        this.stopPoller();
+        // this.stopPoller();
         if (this.videoRef) {
             this.videoRef.ontimeupdate = null;
             this.videoRef.onended = null;
@@ -88,36 +89,36 @@ class Proofread extends React.Component {
 
 
     componentWillReceiveProps(nextProps) {
-        if (this.props.activeStageIndex !== nextProps.activeStageIndex) {
-            const { video, activeStageIndex } = nextProps;
-            // this.onConvertVideo()
-            if (activeStageIndex === 1) {
+        // if (this.props.activeStageIndex !== nextProps.activeStageIndex) {
+        //     const { video, activeStageIndex } = nextProps;
+        //     // this.onConvertVideo()
+        //     if (activeStageIndex === 1) {
 
-                this.props.fetchArticleByVideoId(video._id);
-                this.stopPoller();
-            } else if (activeStageIndex === 2) {
-                this.startPoller();
-            }
-            if (video) {
-                switch (video.status) {
-                    case 'failed':
-                        this.onVideoFailed(video); break;
-                    case 'done':
-                        this.onVideoDone(video); break;
-                    default:
-                        break;
-                }
-            }
-        }
+        //         this.props.fetchArticleByVideoId(video._id);
+        //         this.stopPoller();
+        //     } else if (activeStageIndex === 2) {
+        //         this.startPoller();
+        //     }
+        //     if (video) {
+        //         switch (video.status) {
+        //             case 'failed':
+        //                 this.onVideoFailed(video); break;
+        //             case 'done':
+        //                 this.onVideoDone(video); break;
+        //             default:
+        //                 break;
+        //         }
+        //     }
+        // }
         if (this.props.fetchArticleState === 'loading' && nextProps.fetchArticleState === 'done' && nextProps.article) {
             const { slides } = nextProps.article;
             this.props.setSlidesToSubtitles(slides);
         }
         if (!this.props.video && nextProps.video) {
             const { video } = nextProps;
-            if (video.status === 'cutting') {
+            if (video.status === 'cutting' && nextProps.user && nextProps.user.showCuttingTutorial) {
                 this.setState({ isCuttingVideoTutorialModalVisible: true });
-            } else if (video.status === 'proofreading') {
+            } else if (video.status === 'proofreading' && nextProps.user && nextProps.user.showProofreadingTutorial) {
                 this.setState({ isProofreadingVideoTutorialModalVisible: true });
             }
         }
@@ -165,21 +166,21 @@ class Proofread extends React.Component {
         }
     }
 
-    startPoller = () => {
-        // const videoId = '5d1d9b007e2a29705e0f2f11'
-        this.props.fetchVideoById(this.props.videoId);
-        if (this.state.intervalId) {
-            clearInterval(this.state.intervalId);
-        }
-        const intervalId = setInterval(() => {
-            this.props.fetchVideoById(this.props.videoId);
-        }, 10000);
-        this.setState({ intervalId });
-    }
+    // startPoller = () => {
+    //     // const videoId = '5d1d9b007e2a29705e0f2f11'
+    //     this.props.fetchVideoById(this.props.videoId);
+    //     if (this.state.intervalId) {
+    //         clearInterval(this.state.intervalId);
+    //     }
+    //     const intervalId = setInterval(() => {
+    //         this.props.fetchVideoById(this.props.videoId);
+    //     }, 10000);
+    //     this.setState({ intervalId });
+    // }
 
-    stopPoller = () => {
-        clearInterval(this.state.intervalId);
-    }
+    // stopPoller = () => {
+    //     clearInterval(this.state.intervalId);
+    // }
 
     onVideoFailed(video) {
         this.stopPoller()
@@ -1125,10 +1126,14 @@ class Proofread extends React.Component {
                 <CuttingVideoTutorialModal
                     open={this.state.isCuttingVideoTutorialModalVisible}
                     onClose={() => this.setState({ isCuttingVideoTutorialModalVisible: false })}
+                    showOnStartup={this.props.user && this.props.user.showCuttingTutorial}
+                    onChangeShowOnStartup={(show) => this.props.updateShowCuttingTutorial(show)}
                 />
 
                 <ProofreadingVideoTutorialModal
                     open={this.state.isProofreadingVideoTutorialModalVisible}
+                    showOnStartup={this.props.user && this.props.user.showProofreadingTutorial}
+                    onChangeShowOnStartup={(show) => this.props.updateShowProofreadingTutorial(show)}
                     onClose={() => {
                         this.setState({ isProofreadingVideoTutorialModalVisible: false });
                         if (versionedSubslides && versionedSubslides.length > 0 && versionedSubslides.some(s => s.AITranscriptionLoading) &&
@@ -1218,6 +1223,7 @@ const mapStateToProps = ({ proofread }) => ({
 })
 
 const mapDispatchToProps = (dispatch) => ({
+    fetchData: ({videoId, apiKey}) => dispatch(actions.fetchData({ videoId, apiKey })),
     fetchVideoById: (id) => dispatch(actions.fetchVideoById(id)),
     resetState: () => dispatch(actions.reset()),
     resetArticleState: () => dispatch(actions.reset()),
@@ -1225,6 +1231,8 @@ const mapDispatchToProps = (dispatch) => ({
     markVideoAsDone: (videoId, articleId) => dispatch(actions.markVideoAsDone(videoId, articleId)),
     setToEnglish: (toEnglish) => dispatch(actions.setToEnglish(toEnglish)),
     updateToEnglish: (toEnglish) => dispatch(actions.updateToEnglish(toEnglish)),
+    updateShowCuttingTutorial: (show) => dispatch(actions.updateShowCuttingTutorial(show)),
+    updateShowProofreadingTutorial: (show) => dispatch(actions.updateShowProofreadingTutorial(show)),
 
     setNameSlides: (nameSlides) => dispatch(actions.setNameSlides(nameSlides)),
     fetchArticleByVideoId: id => dispatch(actions.fetchArticleByVideoId(id)),
