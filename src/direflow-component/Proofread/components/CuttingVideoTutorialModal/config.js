@@ -10,7 +10,7 @@ export const STAGES = [
         activeRange: [1, 1]
     },
     {
-        title: 'Spaeker Slides',
+        title: 'Speaker Slides',
         activeRange: [2, 4]
     },
     {
