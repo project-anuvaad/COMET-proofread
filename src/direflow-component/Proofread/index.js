@@ -979,7 +979,7 @@ class Proofread extends React.Component {
                                         <SubtitleForm
                                             title={slideTitle}
                                             loading={this.props.updateSubslideState === 'loading'}
-                                            transcriptionVersionsCount={this.props.transcriptionVersions.length}
+                                            transcriptionVersionsCount={this.props.transcriptionVersions.length + (this.props.video.transcriptionScriptContent ? 1 : 0 )}
                                             subtitle={this.props.selectedSubtitle.subtitle}
                                             speakers={[{ speakerNumber: -1 }].concat(this.props.article.speakersProfile)}
                                             showTextArea={this.props.selectedSubtitle.subtitle.speakerProfile.speakerNumber !== -1}
@@ -1111,7 +1111,7 @@ class Proofread extends React.Component {
                         subslide={this.props.selectedSubtitle.subtitle}
                         transcriptionVersions={this.props.transcriptionVersions}
                         versionedSubslides={versionedSubslides}
-
+                        transcriptionScriptContent={this.props.video.transcriptionScriptContent}
                         onClose={() => this.setState({ isTranscriptionVersionModalVisible: false })}
                         onVersionChange={(transcriptionVersionArticleId) => {
                             this.setState({ isTranscriptionVersionModalVisible: false });

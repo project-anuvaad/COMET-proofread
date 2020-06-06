@@ -29,6 +29,7 @@ export default class SubtitleForm extends React.Component {
 
     componentWillReceiveProps = (nextProps) => {
         if (this.props.subtitle !== nextProps.subtitle) {
+            console.log('change slide', nextProps.subtitle)
             const { text, startTime, endTime } = nextProps.subtitle;
             const { speakerNumber } = nextProps.subtitle.speakerProfile
             this.setState({ text, speakerNumber, startTime: formatTime(startTime), endTime: formatTime(endTime) });
