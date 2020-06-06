@@ -17,7 +17,7 @@ export default class Slide extends React.Component {
             speakerNumber: null,
         };
         this.debouncedSave = debounce(({ field, value }) => {
-            this.props.onChange({[field]: value})
+            this.props.onChange({ [field]: value })
         }, 1000)
     }
 
@@ -42,23 +42,25 @@ export default class Slide extends React.Component {
     }
 
     updateTimings = ({ startTime, endTime, speakerNumber }) => {
+        const seconds = parseFloat((endTime - startTime) / 1000)
         this.setState({
             speakerNumber,
             startTime: formatTime(startTime, { milliseconds: true }),
             endTime: formatTime(endTime, { milliseconds: true }),
-            seconds: parseFloat((endTime - startTime) / 1000),
+            seconds: seconds === 0 ? '' : seconds,
         });
     }
 
     onSecondsChange = (e) => {
         let seconds = this.state.seconds;
-        if (Number.isInteger(parseInt(e.target.value))) {
-            seconds = parseFloat(e.target.value);
+        const value = e.target.value || 0;
+        if (Number.isInteger(parseInt(value))) {
+            seconds = parseFloat(value);
         }
         let { startTime, endTime, speakerProfile } = this.props.slide;
         endTime = startTime + parseFloat(seconds) * 1000;
         this.updateTimings({ startTime, endTime, speakerNumber: speakerProfile.speakerNumber })
-        this.debouncedSave({ field: 'endTime', value: endTime / 1000})
+        this.debouncedSave({ field: 'endTime', value: endTime / 1000 })
     }
 
     onTimeBlur = (e) => {
@@ -76,7 +78,6 @@ export default class Slide extends React.Component {
         if (isTimeFormatValid(e.target.value)) {
             this.setState({ [fieldName]: e.target.value })
             const newValue = unformatTime(e.target.value).totalMilliseconds / 1000;
-            console.log('on change', fieldName, newValue )
             this.debouncedSave({ field: fieldName, value: newValue });
         }
     }
@@ -123,6 +124,7 @@ export default class Slide extends React.Component {
                                             style={{ width: 60, marginRight: 10 }}
                                             type="number"
                                             min={0}
+                                            // input={<input />}
                                             value={this.state.seconds}
                                             size="mini"
                                             name="endTime"
