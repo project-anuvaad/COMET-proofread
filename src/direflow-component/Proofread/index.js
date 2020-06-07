@@ -476,7 +476,7 @@ class Proofread extends React.Component {
                 Do you want to get notified when the AI Transcription is done?
             </Modal.Content>
             <Modal.Actions>
-                <Button onClick={() => this.setState({ isAutomatedVideoBreakingModalOpen: false })} >No</Button>
+                <Button onClick={() => this.setState({ isSubscribeToAITranscribeFinishModalVisible: false })} >No</Button>
                 <Button color="blue" onClick={() => {
                     this.props.subscribeToAITranscribeFinish(this.props.article._id);
                     this.setState({ isSubscribeToAITranscribeFinishModalVisible: false });
