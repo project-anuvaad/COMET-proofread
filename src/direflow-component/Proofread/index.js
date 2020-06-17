@@ -1,4 +1,4 @@
-import React, { version } from "react";
+import React from "react";
 import { connect } from "react-redux";
 import {
   Progress,
@@ -7,11 +7,7 @@ import {
   Button,
   Icon,
   Modal,
-  Input,
   Popup,
-  Checkbox,
-  Dimmer,
-  Loader,
 } from "semantic-ui-react";
 import Lottie from "react-lottie";
 import Switch from "react-switch";
@@ -27,7 +23,7 @@ import ProofreadingVideoPlayer from "./components/ProofreadingVideoPlayer";
 import SplitterIcon from "./components/SplitterIcon";
 import SpeakerDragItem from "./components/SpeakerDragItem";
 import SubtitleNameForm from "./components/SubtitleNameForm";
-import { formatTime, getUserOrganziationRole } from "./utils/helpers";
+import { formatTime, getUserOrganziationRole, canUserAccess } from "./utils/helpers";
 
 import styles from "./style.scss";
 
@@ -304,9 +300,7 @@ class Proofread extends React.Component {
     if (
       (video.verifiers.map((v) => v._id).indexOf(user._id) !== -1 &&
         article.reviewCompleted) ||
-      (userRole &&
-        (userRole.permissions.indexOf("admin") !== -1 ||
-          userRole.organizationOwner))
+        canUserAccess(user, organization, ['admin', 'project_leader'])
     ) {
       return true;
     }
@@ -320,7 +314,12 @@ class Proofread extends React.Component {
     if (
       (!video.reviewers || video.reviewers.length === 0) &&
       userRole &&
-      userRole.permissions.indexOf("review") !== -1
+      canUserAccess(user, organization, [
+        'review',
+        'break_videos',
+        'transcribe_text',
+        'approve_transcriptions',
+      ])
     )
       return true;
     return false;
