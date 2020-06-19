@@ -119,6 +119,7 @@ class Proofread extends React.Component {
         this.setState({ isProofreadingVideoTutorialModalVisible: true });
       }
     }
+    const { article, transcriptionVersions } = this.props;
     if (
       nextProps.article &&
       nextProps.user && 
