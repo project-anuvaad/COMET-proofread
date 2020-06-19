@@ -95,27 +95,6 @@ class Proofread extends React.Component {
   }
 
   componentWillReceiveProps(nextProps) {
-    // if (this.props.activeStageIndex !== nextProps.activeStageIndex) {
-    //     const { video, activeStageIndex } = nextProps;
-    //     // this.onConvertVideo()
-    //     if (activeStageIndex === 1) {
-
-    //         this.props.fetchArticleByVideoId(video._id);
-    //         this.stopPoller();
-    //     } else if (activeStageIndex === 2) {
-    //         this.startPoller();
-    //     }
-    //     if (video) {
-    //         switch (video.status) {
-    //             case 'failed':
-    //                 this.onVideoFailed(video); break;
-    //             case 'done':
-    //                 this.onVideoDone(video); break;
-    //             default:
-    //                 break;
-    //         }
-    //     }
-    // }
     if (
       this.props.fetchArticleState === "loading" &&
       nextProps.fetchArticleState === "done" &&
@@ -138,6 +117,23 @@ class Proofread extends React.Component {
         nextProps.user.showProofreadingTutorial
       ) {
         this.setState({ isProofreadingVideoTutorialModalVisible: true });
+      }
+    }
+    if (
+      nextProps.article &&
+      nextProps.user && 
+      (!nextProps.article.AITranscriptionFinishSubscribers || nextProps.article.AITranscriptionFinishSubscribers.indexOf(nextProps.user._id) === -1) &&
+      nextProps.transcriptionVersions &&
+      nextProps.transcriptionVersions.length > 0 && 
+      (!article || !transcriptionVersions || transcriptionVersions.length === 0) &&
+      !this.state.isProofreadingVideoTutorialModalVisible && 
+      !this.state.isSubscribeToAITranscribeFinishModalVisible 
+    ) {
+
+      const AITranscription = nextProps.transcriptionVersions.find(t => t.isAITranscription);
+      const subslides = AITranscription && AITranscription.slides ? AITranscription.slides.reduce((acc, s) => acc.concat(s.content), []) : [];
+      if (subslides.some(s => s.AITranscriptionLoading)) {
+        this.setState({ isSubscribeToAITranscribeFinishModalVisible: true });
       }
     }
   }
@@ -340,7 +336,7 @@ class Proofread extends React.Component {
   };
 
   isEditable = () => {
-    return this.props.video;
+    return this.props.video ? true : false;
   };
 
   getVideoStatus = () => {
