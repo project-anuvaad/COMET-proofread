@@ -13,7 +13,7 @@ const direflowProperties = {
   videoId: '',
   backRoute: '',
   finishRedirectRoute: '',
-
+  websocketServerUrl: '',
 };
 
 const direflowPlugins = [

@@ -26,6 +26,7 @@ import SubtitleNameForm from "./components/SubtitleNameForm";
 import { formatTime, getUserOrganziationRole, canUserAccess } from "./utils/helpers";
 
 import styles from "./style.scss";
+import websockets from './websockets';
 
 import FindAndReplaceModal from "./components/FindAndReplaceModal";
 
@@ -34,6 +35,7 @@ import SlidesList from "./components/SlidesList";
 import TranscriptionVersionSelectModal from "./components/TranscriptionVersionSelectModal";
 import CuttingVideoTutorialModal from "./components/CuttingVideoTutorialModal";
 import ProofreadingVideoTutorialModal from "./components/ProofreadingVideoTutorialModal";
+import NotificationService from "./utils/NotificationService";
 
 const renderRobotLoader = () => {
   const defaultOptions = {
@@ -76,25 +78,51 @@ class Proofread extends React.Component {
       videoId: this.props.videoId,
       apiKey: this.props.apiKey,
     });
-    // this.props.fetchVideoById(this.props.videoId);
-    // this.props.fetchUserData()
-    // this.props.fetchOrganizationData(this.props.apiKey)
-    // this.props.fetchArticleByVideoId(this.props.videoId);
-    // this.props.fetchTranscriptionVersions(this.props.videoId);
+
+    this.websocketConnection = websockets.createWebsocketConnection(this.props.websocketServerUrl, {
+      path: '/socket.io',
+      transports: ['websocket'],
+      secure: true,
+    })
+
+    websockets.subscribeToEvent(websockets.events.AUTHENTICATE_SUCCESS, (data) => {
+      console.log('websocket auth seccuess');
+    })
+
+    websockets.subscribeToEvent(`${websockets.events.AI_TRANSCRIBE_VIDEO_FINISH}/${this.props.videoId}`, (data) => {
+      NotificationService.success('AI Trascription finished')
+      this.props.fetchArticleByVideoId(this.props.videoId);
+      this.props.fetchTranscriptionVersions(this.props.videoId);
+    })
+
+    this.websocketAuthIntervalId = setInterval(() => {
+      websockets.emitEvent(websockets.events.AUTHENTICATE, { organization: this.props.organization._id, apiKey: this.props.apiKey })
+    }, 60 * 1000);
 
     this.props.setToEnglish(false);
   }
 
   componentWillUnmount() {
-    // this.stopPoller();
     if (this.videoRef) {
       this.videoRef.ontimeupdate = null;
       this.videoRef.onended = null;
     }
+
+    if (this.websocketAuthIntervalId) {
+      clearInterval(this.websocketAuthIntervalId)
+      this.websocketAuthIntervalId = null;
+    }
+
     this.props.resetState();
   }
 
   componentWillReceiveProps(nextProps) {
+    if (
+      (!this.props.organization || !this.props.apiKey) &&
+      (nextProps.organization && nextProps.apiKey)
+    ) {
+      websockets.emitEvent(websockets.events.AUTHENTICATE, { organization: nextProps.organization._id, apiKey: nextProps.apiKey })
+    }
     if (
       this.props.fetchArticleState === "loading" &&
       nextProps.fetchArticleState === "done" &&
@@ -122,13 +150,13 @@ class Proofread extends React.Component {
     const { article, transcriptionVersions } = this.props;
     if (
       nextProps.article &&
-      nextProps.user && 
+      nextProps.user &&
       (!nextProps.article.AITranscriptionFinishSubscribers || nextProps.article.AITranscriptionFinishSubscribers.indexOf(nextProps.user._id) === -1) &&
       nextProps.transcriptionVersions &&
-      nextProps.transcriptionVersions.length > 0 && 
+      nextProps.transcriptionVersions.length > 0 &&
       (!article || !transcriptionVersions || transcriptionVersions.length === 0) &&
-      !this.state.isProofreadingVideoTutorialModalVisible && 
-      !this.state.isSubscribeToAITranscribeFinishModalVisible 
+      !this.state.isProofreadingVideoTutorialModalVisible &&
+      !this.state.isSubscribeToAITranscribeFinishModalVisible
     ) {
 
       const AITranscription = nextProps.transcriptionVersions.find(t => t.isAITranscription);
@@ -165,7 +193,7 @@ class Proofread extends React.Component {
     } else if (
       this.props.selectedSubtitle &&
       this.props.selectedSubtitle.subtitleIndex !==
-        this.props.subtitles.length - 1
+      this.props.subtitles.length - 1
     ) {
       this.props.setSelectedSubtitle(
         this.props.subtitles[this.props.subtitles.length - 1],
@@ -297,7 +325,7 @@ class Proofread extends React.Component {
     if (
       (video.verifiers.map((v) => v._id).indexOf(user._id) !== -1 &&
         article.reviewCompleted) ||
-        canUserAccess(user, organization, ['admin', 'project_leader'])
+      canUserAccess(user, organization, ['admin', 'project_leader'])
     ) {
       return true;
     }
@@ -350,7 +378,7 @@ class Proofread extends React.Component {
     return parseInt(
       (this.props.stages.filter((stage) => stage.completed).length /
         this.props.stages.length) *
-        100
+      100
     );
   };
 
@@ -367,10 +395,10 @@ class Proofread extends React.Component {
             </div>
           </React.Fragment>
         ) : (
-          <div>
-            Something went wrong while converting the video, please try again.
-          </div>
-        )}
+            <div>
+              Something went wrong while converting the video, please try again.
+            </div>
+          )}
       </div>
     );
   };
@@ -732,7 +760,7 @@ class Proofread extends React.Component {
                       <Grid.Column width={2}>
                         {isEditable &&
                           index ===
-                            this.props.article.speakersProfile.length - 1 && (
+                          this.props.article.speakersProfile.length - 1 && (
                             <Button
                               color="red"
                               onClick={() => this.onDeleteSpeaker(index)}
@@ -800,8 +828,8 @@ class Proofread extends React.Component {
                     style={{ transform: "rotateZ(270deg)" }}
                   />
                 ) : (
-                  <SplitterIcon />
-                )}
+                    <SplitterIcon />
+                  )}
                 {this.state.splitterDragging && (
                   <div>{formatTime(this.state.currentTime)}</div>
                 )}
@@ -908,7 +936,7 @@ class Proofread extends React.Component {
                         <Grid.Column
                           width={
                             index ===
-                            this.props.article.speakersProfile.length - 1
+                              this.props.article.speakersProfile.length - 1
                               ? 3
                               : 5
                           }
@@ -927,16 +955,16 @@ class Proofread extends React.Component {
 
                         {index ===
                           this.props.article.speakersProfile.length - 1 && (
-                          <Grid.Column width={2}>
-                            <Button
-                              color="red"
-                              className="pull-right"
-                              onClick={() => this.onDeleteSpeaker(index)}
-                              icon="trash"
-                              size="tiny"
-                            />
-                          </Grid.Column>
-                        )}
+                            <Grid.Column width={2}>
+                              <Button
+                                color="red"
+                                className="pull-right"
+                                onClick={() => this.onDeleteSpeaker(index)}
+                                icon="trash"
+                                size="tiny"
+                              />
+                            </Grid.Column>
+                          )}
                       </Grid.Row>
                     </Grid>
                   </Grid.Column>
@@ -1092,10 +1120,10 @@ class Proofread extends React.Component {
                               Complete <Icon name={"arrow right"} />
                             </span>
                           ) : (
-                            <span>
-                              Send to Proofread <Icon name={"arrow right"} />
-                            </span>
-                          )}
+                              <span>
+                                Send to Proofread <Icon name={"arrow right"} />
+                              </span>
+                            )}
                         </Button>
                       )}
                       {this.canMarkAsDone() && (
@@ -1229,20 +1257,20 @@ class Proofread extends React.Component {
                       onPlayToggle={this.onPlayToggle}
                       extraContent={
                         this.props.selectedSubtitle &&
-                        this.props.selectedSubtitle.subtitle ? (
-                          <div style={{ minWidth: 130 }}>
-                            {this.renderTimingInfo(
-                              parseInt(
-                                (this.props.selectedSubtitle.subtitle.endTime -
-                                  this.props.selectedSubtitle.subtitle
-                                    .startTime) /
+                          this.props.selectedSubtitle.subtitle ? (
+                            <div style={{ minWidth: 130 }}>
+                              {this.renderTimingInfo(
+                                parseInt(
+                                  (this.props.selectedSubtitle.subtitle.endTime -
+                                    this.props.selectedSubtitle.subtitle
+                                      .startTime) /
                                   1000
-                              )
-                            )}
-                          </div>
-                        ) : (
-                          <p style={{ width: 130 }}></p>
-                        )
+                                )
+                              )}
+                            </div>
+                          ) : (
+                            <p style={{ width: 130 }}></p>
+                          )
                       }
                     />
                   </div>
@@ -1308,103 +1336,103 @@ class Proofread extends React.Component {
             <Grid.Column width={7}>
               <div>
                 {this.props.video &&
-                this.props.video.status === "proofreading" &&
-                this.props.article &&
-                this.props.article.speakersProfile &&
-                this.props.selectedSubtitle &&
-                this.props.selectedSubtitle.subtitle ? (
-                  <div style={{ width: "100%", position: "relative" }}>
-                    {/* <Dimmer active={versionedSubslides} inverted>
+                  this.props.video.status === "proofreading" &&
+                  this.props.article &&
+                  this.props.article.speakersProfile &&
+                  this.props.selectedSubtitle &&
+                  this.props.selectedSubtitle.subtitle ? (
+                    <div style={{ width: "100%", position: "relative" }}>
+                      {/* <Dimmer active={versionedSubslides} inverted>
                                             <Loader inverted>Working on AI transcription</Loader>
                                         </Dimmer> */}
 
-                    <SubtitleForm
-                      title={slideTitle}
-                      loading={this.props.updateSubslideState === "loading"}
-                      transcriptionVersionsCount={
-                        this.props.transcriptionVersions.length +
-                        (this.props.video.transcriptionScriptContent ? 1 : 0)
-                      }
-                      subtitle={this.props.selectedSubtitle.subtitle}
-                      speakers={[{ speakerNumber: -1 }].concat(
-                        this.props.article.speakersProfile
-                      )}
-                      showTextArea={
-                        this.props.selectedSubtitle.subtitle.speakerProfile
-                          .speakerNumber !== -1
-                      }
-                      onOpenTranslationVersions={this.onOpenTranslationVersions}
-                      onFindAndReplaceOpen={() =>
-                        this.setState({ isFindAndReplaceModalVisible: true })
-                      }
-                      onFindAndReplaceSubmit={({ find, replace }) =>
-                        this.props.findAndReplaceText(find, replace)
-                      }
-                      onSave={(changes) => {
-                        let {
-                          text,
-                          speakerNumber,
-                          startTime,
-                          endTime,
-                        } = changes;
-                        if (
-                          typeof startTime === "number" ||
-                          typeof endTime === "number"
-                        ) {
-                          this.onSaveSubtitle(
-                            this.props.selectedSubtitle.subtitle,
-                            this.props.selectedSubtitle.subtitleIndex,
-                            changes
-                          );
-                        } else {
-                          let speakerProfile = this.props.article.speakersProfile.find(
-                            (speaker) => speaker.speakerNumber === speakerNumber
-                          );
-                          if (speakerNumber !== -1) {
-                            speakerProfile = this.props.article.speakersProfile.find(
-                              (speaker) =>
-                                speaker.speakerNumber === speakerNumber
+                      <SubtitleForm
+                        title={slideTitle}
+                        loading={this.props.updateSubslideState === "loading"}
+                        transcriptionVersionsCount={
+                          this.props.transcriptionVersions.length +
+                          (this.props.video.transcriptionScriptContent ? 1 : 0)
+                        }
+                        subtitle={this.props.selectedSubtitle.subtitle}
+                        speakers={[{ speakerNumber: -1 }].concat(
+                          this.props.article.speakersProfile
+                        )}
+                        showTextArea={
+                          this.props.selectedSubtitle.subtitle.speakerProfile
+                            .speakerNumber !== -1
+                        }
+                        onOpenTranslationVersions={this.onOpenTranslationVersions}
+                        onFindAndReplaceOpen={() =>
+                          this.setState({ isFindAndReplaceModalVisible: true })
+                        }
+                        onFindAndReplaceSubmit={({ find, replace }) =>
+                          this.props.findAndReplaceText(find, replace)
+                        }
+                        onSave={(changes) => {
+                          let {
+                            text,
+                            speakerNumber,
+                            startTime,
+                            endTime,
+                          } = changes;
+                          if (
+                            typeof startTime === "number" ||
+                            typeof endTime === "number"
+                          ) {
+                            this.onSaveSubtitle(
+                              this.props.selectedSubtitle.subtitle,
+                              this.props.selectedSubtitle.subtitleIndex,
+                              changes
                             );
                           } else {
-                            speakerProfile = { speakerNumber: -1 };
-                            text = "";
-                          }
+                            let speakerProfile = this.props.article.speakersProfile.find(
+                              (speaker) => speaker.speakerNumber === speakerNumber
+                            );
+                            if (speakerNumber !== -1) {
+                              speakerProfile = this.props.article.speakersProfile.find(
+                                (speaker) =>
+                                  speaker.speakerNumber === speakerNumber
+                              );
+                            } else {
+                              speakerProfile = { speakerNumber: -1 };
+                              text = "";
+                            }
 
-                          this.onSaveSubtitle(
+                            this.onSaveSubtitle(
+                              this.props.selectedSubtitle.subtitle,
+                              this.props.selectedSubtitle.subtitleIndex,
+                              { text, speakerProfile }
+                            );
+                          }
+                        }}
+                        onDelete={() =>
+                          this.onSubslideDelete(
                             this.props.selectedSubtitle.subtitle,
-                            this.props.selectedSubtitle.subtitleIndex,
-                            { text, speakerProfile }
-                          );
+                            this.props.selectedSubtitle.subtitleIndex
+                          )
                         }
-                      }}
-                      onDelete={() =>
-                        this.onSubslideDelete(
-                          this.props.selectedSubtitle.subtitle,
-                          this.props.selectedSubtitle.subtitleIndex
-                        )
-                      }
-                    />
-                    {versionedSubslides &&
-                      versionedSubslides.length > 0 &&
-                      versionedSubslides.some(
-                        (s) => s.AITranscriptionLoading
-                      ) && (
-                        <div
-                          style={{
-                            display: "flex",
-                            justifyContent: "center",
-                            alignItems: "center",
-                            flexDirection: "column",
-                          }}
-                        >
-                          {renderRobotLoader()}
-                          <span>
-                            Working on AI Transcription, please wait...
+                      />
+                      {versionedSubslides &&
+                        versionedSubslides.length > 0 &&
+                        versionedSubslides.some(
+                          (s) => s.AITranscriptionLoading
+                        ) && (
+                          <div
+                            style={{
+                              display: "flex",
+                              justifyContent: "center",
+                              alignItems: "center",
+                              flexDirection: "column",
+                            }}
+                          >
+                            {renderRobotLoader()}
+                            <span>
+                              Working on AI Transcription, please wait...
                           </span>
-                        </div>
-                      )}
-                  </div>
-                ) : null}
+                          </div>
+                        )}
+                    </div>
+                  ) : null}
               </div>
               {this.props.article && this.props.video && (
                 <div>

@@ -4,6 +4,7 @@ import { Provider } from 'react-redux'
 import { store } from './store'
 
 import Proofread from './Proofread'
+
 import { LOCALSTORAGE_API_ROOT_KEY, LOCALSTORAGE_API_KEY_KEY } from './Proofread/constants';
 import { NotificationContainer } from 'react-notifications';
 
@@ -13,7 +14,7 @@ class App extends React.Component {
     // Set the API KEY to the local storage
     window.localStorage.setItem(LOCALSTORAGE_API_KEY_KEY, this.props.apiKey)
     window.localStorage.setItem(LOCALSTORAGE_API_ROOT_KEY, this.props.apiRoot)
-    
+
   }
   render() {
     return (
