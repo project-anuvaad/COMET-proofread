@@ -86,7 +86,15 @@ export default class Slide extends React.Component {
 
     render() {
         const { slide, index, active, editable, speakers } = this.props;
-
+        const durationInSeconds = (slide.endTime - slide.startTime) / 1000
+        let stateIcon;
+        if (durationInSeconds <= 15) {
+            stateIcon = <Icon name="check circle" color="green" style={{ marginLeft: 10 }} />;
+        } else if (durationInSeconds <= 20) {
+            stateIcon = <Icon name="warning sign circle" color="orange" style={{ marginLeft: 10 }} />;
+        } else {
+            stateIcon = <Icon name="dont circle" color="red" style={{ marginLeft: 10 }} />;
+        }
         return (
             <div
                 style={{ borderColor: SPEAKER_BACKGROUND_COLORS[slide.speakerProfile.speakerNumber] }}
@@ -102,6 +110,7 @@ export default class Slide extends React.Component {
                                 onChange={(e, { value }) => this.props.onChange({ speakerNumber: value })}
                             />
                         )}
+                        {stateIcon}
                 </span>
                 <div>
                     <span className="timing">
