@@ -23,10 +23,14 @@ import ProofreadingVideoPlayer from "./components/ProofreadingVideoPlayer";
 import SplitterIcon from "./components/SplitterIcon";
 import SpeakerDragItem from "./components/SpeakerDragItem";
 import SubtitleNameForm from "./components/SubtitleNameForm";
-import { formatTime, getUserOrganziationRole, canUserAccess } from "./utils/helpers";
+import {
+  formatTime,
+  getUserOrganziationRole,
+  canUserAccess,
+} from "./utils/helpers";
 
 import styles from "./style.scss";
-import websockets from './websockets';
+import websockets from "./websockets";
 
 import FindAndReplaceModal from "./components/FindAndReplaceModal";
 
@@ -36,6 +40,7 @@ import TranscriptionVersionSelectModal from "./components/TranscriptionVersionSe
 import CuttingVideoTutorialModal from "./components/CuttingVideoTutorialModal";
 import ProofreadingVideoTutorialModal from "./components/ProofreadingVideoTutorialModal";
 import NotificationService from "./utils/NotificationService";
+import StagesProcess from "./components/StagesProcess";
 
 const renderRobotLoader = () => {
   const defaultOptions = {
@@ -69,6 +74,8 @@ class Proofread extends React.Component {
     isProofreadingVideoTutorialModalVisible: false,
     isSubscribeToAITranscribeFinishModalVisible: false,
     isAutomatedVideoBreakingModalOpen: false,
+    stageProcessOpen: false,
+    activeStage: "",
   };
 
   componentWillMount() {
@@ -79,24 +86,36 @@ class Proofread extends React.Component {
       apiKey: this.props.apiKey,
     });
 
-    this.websocketConnection = websockets.createWebsocketConnection(this.props.websocketServerUrl, {
-      path: '/socket.io',
-      transports: ['websocket'],
-      secure: true,
-    })
+    this.websocketConnection = websockets.createWebsocketConnection(
+      this.props.websocketServerUrl,
+      {
+        path: "/socket.io",
+        transports: ["websocket"],
+        secure: true,
+      }
+    );
 
-    websockets.subscribeToEvent(websockets.events.AUTHENTICATE_SUCCESS, (data) => {
-      console.log('websocket auth seccuess');
-    })
+    websockets.subscribeToEvent(
+      websockets.events.AUTHENTICATE_SUCCESS,
+      (data) => {
+        console.log("websocket auth seccuess");
+      }
+    );
 
-    websockets.subscribeToEvent(`${websockets.events.AI_TRANSCRIBE_VIDEO_FINISH}/${this.props.videoId}`, (data) => {
-      NotificationService.success('AI Trascription finished')
-      this.props.fetchArticleByVideoId(this.props.videoId);
-      this.props.fetchTranscriptionVersions(this.props.videoId);
-    })
+    websockets.subscribeToEvent(
+      `${websockets.events.AI_TRANSCRIBE_VIDEO_FINISH}/${this.props.videoId}`,
+      (data) => {
+        NotificationService.success("AI Trascription finished");
+        this.props.fetchArticleByVideoId(this.props.videoId);
+        this.props.fetchTranscriptionVersions(this.props.videoId);
+      }
+    );
 
     this.websocketAuthIntervalId = setInterval(() => {
-      websockets.emitEvent(websockets.events.AUTHENTICATE, { organization: this.props.organization._id, apiKey: this.props.apiKey })
+      websockets.emitEvent(websockets.events.AUTHENTICATE, {
+        organization: this.props.organization._id,
+        apiKey: this.props.apiKey,
+      });
     }, 60 * 1000);
 
     this.props.setToEnglish(false);
@@ -109,7 +128,7 @@ class Proofread extends React.Component {
     }
 
     if (this.websocketAuthIntervalId) {
-      clearInterval(this.websocketAuthIntervalId)
+      clearInterval(this.websocketAuthIntervalId);
       this.websocketAuthIntervalId = null;
     }
 
@@ -119,9 +138,13 @@ class Proofread extends React.Component {
   componentWillReceiveProps(nextProps) {
     if (
       (!this.props.organization || !this.props.apiKey) &&
-      (nextProps.organization && nextProps.apiKey)
+      nextProps.organization &&
+      nextProps.apiKey
     ) {
-      websockets.emitEvent(websockets.events.AUTHENTICATE, { organization: nextProps.organization._id, apiKey: nextProps.apiKey })
+      websockets.emitEvent(websockets.events.AUTHENTICATE, {
+        organization: nextProps.organization._id,
+        apiKey: nextProps.apiKey,
+      });
     }
     if (
       this.props.fetchArticleState === "loading" &&
@@ -151,17 +174,26 @@ class Proofread extends React.Component {
     if (
       nextProps.article &&
       nextProps.user &&
-      (!nextProps.article.AITranscriptionFinishSubscribers || nextProps.article.AITranscriptionFinishSubscribers.indexOf(nextProps.user._id) === -1) &&
+      (!nextProps.article.AITranscriptionFinishSubscribers ||
+        nextProps.article.AITranscriptionFinishSubscribers.indexOf(
+          nextProps.user._id
+        ) === -1) &&
       nextProps.transcriptionVersions &&
       nextProps.transcriptionVersions.length > 0 &&
-      (!article || !transcriptionVersions || transcriptionVersions.length === 0) &&
+      (!article ||
+        !transcriptionVersions ||
+        transcriptionVersions.length === 0) &&
       !this.state.isProofreadingVideoTutorialModalVisible &&
       !this.state.isSubscribeToAITranscribeFinishModalVisible
     ) {
-
-      const AITranscription = nextProps.transcriptionVersions.find(t => t.isAITranscription);
-      const subslides = AITranscription && AITranscription.slides ? AITranscription.slides.reduce((acc, s) => acc.concat(s.content), []) : [];
-      if (subslides.some(s => s.AITranscriptionLoading)) {
+      const AITranscription = nextProps.transcriptionVersions.find(
+        (t) => t.isAITranscription
+      );
+      const subslides =
+        AITranscription && AITranscription.slides
+          ? AITranscription.slides.reduce((acc, s) => acc.concat(s.content), [])
+          : [];
+      if (subslides.some((s) => s.AITranscriptionLoading)) {
         this.setState({ isSubscribeToAITranscribeFinishModalVisible: true });
       }
     }
@@ -193,7 +225,7 @@ class Proofread extends React.Component {
     } else if (
       this.props.selectedSubtitle &&
       this.props.selectedSubtitle.subtitleIndex !==
-      this.props.subtitles.length - 1
+        this.props.subtitles.length - 1
     ) {
       this.props.setSelectedSubtitle(
         this.props.subtitles[this.props.subtitles.length - 1],
@@ -325,7 +357,7 @@ class Proofread extends React.Component {
     if (
       (video.verifiers.map((v) => v._id).indexOf(user._id) !== -1 &&
         article.reviewCompleted) ||
-      canUserAccess(user, organization, ['admin', 'project_leader'])
+      canUserAccess(user, organization, ["admin", "project_leader"])
     ) {
       return true;
     }
@@ -340,10 +372,10 @@ class Proofread extends React.Component {
       (!video.reviewers || video.reviewers.length === 0) &&
       userRole &&
       canUserAccess(user, organization, [
-        'review',
-        'break_videos',
-        'transcribe_text',
-        'approve_transcriptions',
+        "review",
+        "break_videos",
+        "transcribe_text",
+        "approve_transcriptions",
       ])
     )
       return true;
@@ -378,7 +410,7 @@ class Proofread extends React.Component {
     return parseInt(
       (this.props.stages.filter((stage) => stage.completed).length /
         this.props.stages.length) *
-      100
+        100
     );
   };
 
@@ -395,10 +427,10 @@ class Proofread extends React.Component {
             </div>
           </React.Fragment>
         ) : (
-            <div>
-              Something went wrong while converting the video, please try again.
-            </div>
-          )}
+          <div>
+            Something went wrong while converting the video, please try again.
+          </div>
+        )}
       </div>
     );
   };
@@ -760,7 +792,7 @@ class Proofread extends React.Component {
                       <Grid.Column width={2}>
                         {isEditable &&
                           index ===
-                          this.props.article.speakersProfile.length - 1 && (
+                            this.props.article.speakersProfile.length - 1 && (
                             <Button
                               color="red"
                               onClick={() => this.onDeleteSpeaker(index)}
@@ -828,8 +860,8 @@ class Proofread extends React.Component {
                     style={{ transform: "rotateZ(270deg)" }}
                   />
                 ) : (
-                    <SplitterIcon />
-                  )}
+                  <SplitterIcon />
+                )}
                 {this.state.splitterDragging && (
                   <div>{formatTime(this.state.currentTime)}</div>
                 )}
@@ -936,7 +968,7 @@ class Proofread extends React.Component {
                         <Grid.Column
                           width={
                             index ===
-                              this.props.article.speakersProfile.length - 1
+                            this.props.article.speakersProfile.length - 1
                               ? 3
                               : 5
                           }
@@ -955,16 +987,16 @@ class Proofread extends React.Component {
 
                         {index ===
                           this.props.article.speakersProfile.length - 1 && (
-                            <Grid.Column width={2}>
-                              <Button
-                                color="red"
-                                className="pull-right"
-                                onClick={() => this.onDeleteSpeaker(index)}
-                                icon="trash"
-                                size="tiny"
-                              />
-                            </Grid.Column>
-                          )}
+                          <Grid.Column width={2}>
+                            <Button
+                              color="red"
+                              className="pull-right"
+                              onClick={() => this.onDeleteSpeaker(index)}
+                              icon="trash"
+                              size="tiny"
+                            />
+                          </Grid.Column>
+                        )}
                       </Grid.Row>
                     </Grid>
                   </Grid.Column>
@@ -1033,80 +1065,37 @@ class Proofread extends React.Component {
                   </Button>
                 </a>
               </div>
-              <div
-                style={{
-                  display: "flex",
-                  justifyContent: "flex-start",
-                  paddingTop: "1rem",
-                }}
-              >
-                {this.props.video && this.props.video.status === "cutting" && (
-                  <Button
-                    circular
-                    color="green"
-                    size="tiny"
-                    onClick={() =>
-                      this.setState({
-                        isCuttingVideoTutorialModalVisible: true,
-                      })
-                    }
-                  >
-                    <Icon name="info circle" style={{ marginRight: 10 }} />
-                    Cutting Video Tutorial
-                  </Button>
-                )}
-                {this.props.video &&
-                  this.props.video.status === "proofreading" && (
-                    <Button
-                      circular
-                      color="green"
-                      size="tiny"
-                      onClick={() =>
-                        this.setState({
-                          isProofreadingVideoTutorialModalVisible: true,
-                        })
-                      }
-                    >
-                      <Icon name="info circle" style={{ marginRight: 10 }} />
-                      Proofreading Video Tutorial
-                    </Button>
-                  )}
-              </div>
-              <div
-                style={{
-                  display: "flex",
-                  justifyContent: "flex-start",
-                  paddingTop: "1rem",
-                }}
-              >
-                {this.props.video && this.props.video.status === "cutting" && (
-                  <Button
-                    circular
-                    color="green"
-                    size="tiny"
-                    onClick={() =>
-                      this.setState({ isAutomatedVideoBreakingModalOpen: true })
-                    }
-                  >
-                    <Icon name="cut" style={{ marginRight: 10 }} />
-                    Automated video breaking
-                  </Button>
-                )}
-              </div>
             </Grid.Column>
-            <Grid.Column width={8} />
+            <Grid.Column width={2} />
 
-            <Grid.Column width={4}>
+            <Grid.Column width={10}>
               <Grid>
                 <Grid.Row>
                   <Grid.Column width={16}>
                     <div
                       style={{ display: "flex", justifyContent: "flex-end" }}
                     >
+                      {this.props.video &&
+                        this.props.video.status === "cutting" && (
+                          <Button
+                            circular
+                            color="green"
+                            size="small"
+                            style={{ marginRight: 10 }}
+                            onClick={() =>
+                              this.setState({
+                                isAutomatedVideoBreakingModalOpen: true,
+                              })
+                            }
+                          >
+                            <Icon name="cut" style={{ marginRight: 10 }} />
+                            Automated video breaking
+                          </Button>
+                        )}
                       {!this.canMarkAsDone() && this.canSaveAndComplete() && (
                         <Button
                           color="blue"
-                          size="large"
+                          size="small"
                           circular
                           onClick={() =>
                             this.setState({
@@ -1120,16 +1109,16 @@ class Proofread extends React.Component {
                               Complete <Icon name={"arrow right"} />
                             </span>
                           ) : (
-                              <span>
-                                Send to Proofread <Icon name={"arrow right"} />
-                              </span>
-                            )}
+                            <span>
+                              Send to Proofread <Icon name={"arrow right"} />
+                            </span>
+                          )}
                         </Button>
                       )}
                       {this.canMarkAsDone() && (
                         <Button
                           color="blue"
-                          size="large"
+                          size="small"
                           circular
                           onClick={() =>
                             this.setState({ isConfirmDoneModalVisible: true })
@@ -1169,7 +1158,6 @@ class Proofread extends React.Component {
                         />
                       </div>
                     </div>
-
                     {this.props.nameSlides &&
                       this.props.selectedSubtitle &&
                       this.props.selectedSubtitle.subtitle && (
@@ -1229,6 +1217,15 @@ class Proofread extends React.Component {
                           </div>
                         </div>
                       )}
+
+                    {/* <div
+                      style={{
+                        display: "flex",
+                        justifyContent: "flex-end",
+                        paddingTop: "1rem",
+                      }}
+                    >
+                    </div> */}
                   </Grid.Column>
                 </Grid.Row>
               </Grid>
@@ -1257,20 +1254,20 @@ class Proofread extends React.Component {
                       onPlayToggle={this.onPlayToggle}
                       extraContent={
                         this.props.selectedSubtitle &&
-                          this.props.selectedSubtitle.subtitle ? (
-                            <div style={{ minWidth: 130 }}>
-                              {this.renderTimingInfo(
-                                parseInt(
-                                  (this.props.selectedSubtitle.subtitle.endTime -
-                                    this.props.selectedSubtitle.subtitle
-                                      .startTime) /
+                        this.props.selectedSubtitle.subtitle ? (
+                          <div style={{ minWidth: 130 }}>
+                            {this.renderTimingInfo(
+                              parseInt(
+                                (this.props.selectedSubtitle.subtitle.endTime -
+                                  this.props.selectedSubtitle.subtitle
+                                    .startTime) /
                                   1000
-                                )
-                              )}
-                            </div>
-                          ) : (
-                            <p style={{ width: 130 }}></p>
-                          )
+                              )
+                            )}
+                          </div>
+                        ) : (
+                          <p style={{ width: 130 }}></p>
+                        )
                       }
                     />
                   </div>
@@ -1336,106 +1333,143 @@ class Proofread extends React.Component {
             <Grid.Column width={7}>
               <div>
                 {this.props.video &&
-                  this.props.video.status === "proofreading" &&
-                  this.props.article &&
-                  this.props.article.speakersProfile &&
-                  this.props.selectedSubtitle &&
-                  this.props.selectedSubtitle.subtitle ? (
-                    <div style={{ width: "100%", position: "relative" }}>
-                      {/* <Dimmer active={versionedSubslides} inverted>
+                this.props.video.status === "proofreading" &&
+                this.props.article &&
+                this.props.article.speakersProfile &&
+                this.props.selectedSubtitle &&
+                this.props.selectedSubtitle.subtitle ? (
+                  <div style={{ width: "100%", position: "relative" }}>
+                    {/* <Dimmer active={versionedSubslides} inverted>
                                             <Loader inverted>Working on AI transcription</Loader>
                                         </Dimmer> */}
 
-                      <SubtitleForm
-                        title={slideTitle}
-                        loading={this.props.updateSubslideState === "loading"}
-                        transcriptionVersionsCount={
-                          this.props.transcriptionVersions.length +
-                          (this.props.video.transcriptionScriptContent ? 1 : 0)
-                        }
-                        subtitle={this.props.selectedSubtitle.subtitle}
-                        speakers={[{ speakerNumber: -1 }].concat(
-                          this.props.article.speakersProfile
-                        )}
-                        showTextArea={
-                          this.props.selectedSubtitle.subtitle.speakerProfile
-                            .speakerNumber !== -1
-                        }
-                        onOpenTranslationVersions={this.onOpenTranslationVersions}
-                        onFindAndReplaceOpen={() =>
-                          this.setState({ isFindAndReplaceModalVisible: true })
-                        }
-                        onFindAndReplaceSubmit={({ find, replace }) =>
-                          this.props.findAndReplaceText(find, replace)
-                        }
-                        onSave={(changes) => {
-                          let {
-                            text,
-                            speakerNumber,
-                            startTime,
-                            endTime,
-                          } = changes;
-                          if (
-                            typeof startTime === "number" ||
-                            typeof endTime === "number"
-                          ) {
-                            this.onSaveSubtitle(
-                              this.props.selectedSubtitle.subtitle,
-                              this.props.selectedSubtitle.subtitleIndex,
-                              changes
+                    <SubtitleForm
+                      title={slideTitle}
+                      loading={this.props.updateSubslideState === "loading"}
+                      transcriptionVersionsCount={
+                        this.props.transcriptionVersions.length +
+                        (this.props.video.transcriptionScriptContent ? 1 : 0)
+                      }
+                      subtitle={this.props.selectedSubtitle.subtitle}
+                      speakers={[{ speakerNumber: -1 }].concat(
+                        this.props.article.speakersProfile
+                      )}
+                      showTextArea={
+                        this.props.selectedSubtitle.subtitle.speakerProfile
+                          .speakerNumber !== -1
+                      }
+                      onOpenTranslationVersions={this.onOpenTranslationVersions}
+                      onFindAndReplaceOpen={() =>
+                        this.setState({ isFindAndReplaceModalVisible: true })
+                      }
+                      onFindAndReplaceSubmit={({ find, replace }) =>
+                        this.props.findAndReplaceText(find, replace)
+                      }
+                      onSave={(changes) => {
+                        let {
+                          text,
+                          speakerNumber,
+                          startTime,
+                          endTime,
+                        } = changes;
+                        if (
+                          typeof startTime === "number" ||
+                          typeof endTime === "number"
+                        ) {
+                          this.onSaveSubtitle(
+                            this.props.selectedSubtitle.subtitle,
+                            this.props.selectedSubtitle.subtitleIndex,
+                            changes
+                          );
+                        } else {
+                          let speakerProfile = this.props.article.speakersProfile.find(
+                            (speaker) => speaker.speakerNumber === speakerNumber
+                          );
+                          if (speakerNumber !== -1) {
+                            speakerProfile = this.props.article.speakersProfile.find(
+                              (speaker) =>
+                                speaker.speakerNumber === speakerNumber
                             );
                           } else {
-                            let speakerProfile = this.props.article.speakersProfile.find(
-                              (speaker) => speaker.speakerNumber === speakerNumber
-                            );
-                            if (speakerNumber !== -1) {
-                              speakerProfile = this.props.article.speakersProfile.find(
-                                (speaker) =>
-                                  speaker.speakerNumber === speakerNumber
-                              );
-                            } else {
-                              speakerProfile = { speakerNumber: -1 };
-                              text = "";
-                            }
-
-                            this.onSaveSubtitle(
-                              this.props.selectedSubtitle.subtitle,
-                              this.props.selectedSubtitle.subtitleIndex,
-                              { text, speakerProfile }
-                            );
+                            speakerProfile = { speakerNumber: -1 };
+                            text = "";
                           }
-                        }}
-                        onDelete={() =>
-                          this.onSubslideDelete(
+
+                          this.onSaveSubtitle(
                             this.props.selectedSubtitle.subtitle,
-                            this.props.selectedSubtitle.subtitleIndex
-                          )
+                            this.props.selectedSubtitle.subtitleIndex,
+                            { text, speakerProfile }
+                          );
                         }
-                      />
-                      {versionedSubslides &&
-                        versionedSubslides.length > 0 &&
-                        versionedSubslides.some(
-                          (s) => s.AITranscriptionLoading
-                        ) && (
-                          <div
-                            style={{
-                              display: "flex",
-                              justifyContent: "center",
-                              alignItems: "center",
-                              flexDirection: "column",
-                            }}
-                          >
-                            {renderRobotLoader()}
-                            <span>
-                              Working on AI Transcription, please wait...
+                      }}
+                      onDelete={() =>
+                        this.onSubslideDelete(
+                          this.props.selectedSubtitle.subtitle,
+                          this.props.selectedSubtitle.subtitleIndex
+                        )
+                      }
+                    />
+                    {versionedSubslides &&
+                      versionedSubslides.length > 0 &&
+                      versionedSubslides.some(
+                        (s) => s.AITranscriptionLoading
+                      ) && (
+                        <div
+                          style={{
+                            display: "flex",
+                            justifyContent: "center",
+                            alignItems: "center",
+                            flexDirection: "column",
+                          }}
+                        >
+                          {renderRobotLoader()}
+                          <span>
+                            Working on AI Transcription, please wait...
                           </span>
-                          </div>
-                        )}
-                    </div>
-                  ) : null}
+                        </div>
+                      )}
+                  </div>
+                ) : null}
               </div>
               {this.props.article && this.props.video && (
                 <div>
+                  <div style={{ position: "absolute", top: 0, right: 10 }}>
+                    <Popup
+                      position="bottom left"
+                      trigger={
+                        <span
+                          style={{ cursor: "pointer" }}
+                          onClick={() =>
+                            this.setState({ stageProcessOpen: true })
+                          }
+                        >
+                          <Icon name="question circle" /> Know how it works
+                        </span>
+                      }
+                      content={
+                        <StagesProcess
+                          onStageClick={(stage) => {
+                            const changes = {
+                              stageProcessOpen: false,
+                            }
+                            if (stage === 'cutting') {
+                              changes.isCuttingVideoTutorialModalVisible = true;
+                              changes.isProofreadingVideoTutorialModalVisible = false;
+                            } else if (stage === 'proofreading') {
+                              changes.isCuttingVideoTutorialModalVisible = false;
+                              changes.isProofreadingVideoTutorialModalVisible = true;
+                            }
+                            this.setState(changes);
+                          }}
+                          activeStage={this.props.video.status}
+                        />
+                      }
+                      on="click"
+                      open={this.state.stageProcessOpen}
+                      onClose={() => this.setState({ stageProcessOpen: false })}
+                      // hoverable
+                    />
+                  </div>
                   <SlidesList
                     editable={this.isEditable()}
                     slides={this.props.subtitles}

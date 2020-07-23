@@ -1,0 +1,12 @@
+.stage-processes__stage:hover{
+    // background-color: rgba(0,0,0,0.2);
+    .info-icon {
+        visibility: visible;
+    }
+}
+.stage-processes__stage .info-icon {
+    visibility: hidden;
+    position: absolute;
+    right: -10px;
+    top: 13px;
+}
