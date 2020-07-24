@@ -537,7 +537,16 @@ class Proofread extends React.Component {
       >
         <Modal.Header>Convert video</Modal.Header>
         <Modal.Content>
-          Are you sure you're done verifying the review?
+          {this.props.video.status === "proofreading" && (
+            <span>
+              Are you sure you're done verifying the transcription?
+            </span>
+          )}
+          {this.props.video.status === "cutting" && (
+            <span>
+              Are you sure you're done cutting the video?
+            </span>
+          )}
         </Modal.Content>
         <Modal.Actions>
           <Button
