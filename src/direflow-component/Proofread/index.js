@@ -1084,23 +1084,6 @@ class Proofread extends React.Component {
                     <div
                       style={{ display: "flex", justifyContent: "flex-end" }}
                     >
-                      {this.props.video &&
-                        this.props.video.status === "cutting" && (
-                          <Button
-                            circular
-                            color="green"
-                            size="small"
-                            style={{ marginRight: 10 }}
-                            onClick={() =>
-                              this.setState({
-                                isAutomatedVideoBreakingModalOpen: true,
-                              })
-                            }
-                          >
-                            <Icon name="cut" style={{ marginRight: 10 }} />
-                            Automated video breaking
-                          </Button>
-                        )}
                       {!this.canMarkAsDone() && this.canSaveAndComplete() && (
                         <Button
                           color="blue"

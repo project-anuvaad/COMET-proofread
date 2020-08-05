@@ -14,9 +14,19 @@ class App extends React.Component {
     // Set the API KEY to the local storage
     window.localStorage.setItem(LOCALSTORAGE_API_KEY_KEY, this.props.apiKey)
     window.localStorage.setItem(LOCALSTORAGE_API_ROOT_KEY, this.props.apiRoot)
-
   }
+
+  componentWillReceiveProps = (nextProps) => {
+    if (nextProps.apiKey !== this.props.apiKey) {
+      window.localStorage.setItem(LOCALSTORAGE_API_KEY_KEY, this.props.apiKey)
+    }
+    if (nextProps.apiRoot !== this.props.apiRoot) {
+      window.localStorage.setItem(LOCALSTORAGE_API_ROOT_KEY, this.props.apiRoot)
+    }
+  }
+
   render() {
+    if (!this.props.apiKey || !this.props.apiRoot) return null;
     return (
 
       <Provider store={store} >
