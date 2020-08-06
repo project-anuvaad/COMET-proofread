@@ -3,11 +3,11 @@ export const VIDEOS_EXTESION = ['webm', 'mp4', 'ogg', 'ogv'];
 export const GIF_EXTESIONS = ['gif'];
 export const VIDEO_PLAYER_THUMBNAIL_IMAGE = 'https://tailoredvideowiki.s3-eu-west-1.amazonaws.com/static/video-placeholder.jpg';
 export const SPEAKER_BACKGROUND_COLORS = {
-    [-1]: 'white',
+    [-1]: 'yellow',
     0: '#800080',
     1: '#0e7ceb',
     2: 'green',
-    3: 'yellow',
+    3: 'lightgray',
     4: 'orange',
     5: '#4c4c4c',
     6: '#9a0000',
@@ -18,7 +18,7 @@ export const SPEAKER_BACKGROUND_COLORS = {
 }
 
 export const SPEAKER_TEXT_COLORS = {
-    [-1]: 'white',
+    [-1]: 'black',
     0: 'white',
     1: 'white',
     2: 'white',
