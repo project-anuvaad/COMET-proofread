@@ -121,6 +121,22 @@ export default class SubtitleForm extends React.Component {
                             onChange={(e) => this.setState({ text: e.target.value })}
                             onBlur={() => this.onSave(true)}
                         />
+                        {!this.props.showTextArea && (
+                        <span
+                            style={{
+                                position: 'absolute',
+                                left: 0,
+                                right: 0,
+                                top: 0,
+                                bottom: 0,
+                                display: 'flex',
+                                justifyContent: 'center',
+                                alignItems: 'center',
+                            }}
+                        >
+                            Intro/Extro/Music slide
+                        </span>
+                        )}
                     </div>
                 </Card>
                 )}

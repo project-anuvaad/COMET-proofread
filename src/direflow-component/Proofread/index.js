@@ -1520,7 +1520,7 @@ class Proofread extends React.Component {
                     onSlideClick={(subtitle, index) => {
                       this.props.setSelectedSubtitle(subtitle, index);
                       setTimeout(() => {
-                        this.onTimeChange(subtitle.startTime);
+                        this.onTimeChange(subtitle.startTime + 10);
                       }, 0);
                     }}
                   />
