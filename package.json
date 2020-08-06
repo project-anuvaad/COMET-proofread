@@ -1,7 +1,7 @@
 {
   "name": "@videowiki/vw-proofread",
   "description": "This project is created using Direflow",
-  "version": "3.4.3",
+  "version": "3.4.4",
   "scripts": {
     "start": "react-app-rewired start",
     "build": "react-app-rewired build",

@@ -1031,8 +1031,8 @@ class Proofread extends React.Component {
   );
 
   renderProofreading = () => {
-    const { article, backRoute, selectedSubtitle } = this.props;
-    if (!article) return;
+    const { article, video, backRoute, selectedSubtitle } = this.props;
+    if (!article || !video) return null;
 
     const versionedSubslides = this.getVersionedSubslides();
     let slideTitle = `Slide ${this.props.selectedSubtitle.subtitleIndex + 1}`;
