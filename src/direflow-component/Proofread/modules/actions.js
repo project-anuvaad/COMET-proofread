@@ -416,6 +416,21 @@ export const automaticallyBreakArticle = articleId => (dispatch) => {
             NotificationService.responseError(err)
         })
 } 
+
+export const automaticallyBreakVideo = videoId => (dispatch) => {
+    dispatch(setUpdateLoading(true));
+    requestAgent
+        .post(Api.video.automaticallyBreakVideo(videoId))
+        .then(() => {
+            dispatch(setUpdateLoading(false));
+            dispatch(fetchVideoById(videoId));
+        })
+        .catch(err => {
+            dispatch(setUpdateLoading(false));
+            NotificationService.responseError(err)
+        })
+}
+
 export const subscribeToAITranscribeFinish = articleId => (dispatch) => {
     dispatch(setUpdateLoading(true));
     requestAgent

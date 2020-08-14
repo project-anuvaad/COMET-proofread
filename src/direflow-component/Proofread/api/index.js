@@ -25,6 +25,7 @@ export default {
         updateReviewers: id => `${getApiRoot()}/video/${id}/reviewers`,
         updateVerifiers: id => `${getApiRoot()}/video/${id}/verifiers`,
         refreshMedia: (id) => `${getApiRoot()}/video/${id}/refreshMedia`,
+        automaticallyBreakVideo: (id) => `${getApiRoot()}/video/${id}/automaticBreak`,
     },
     noiseCancellationVideos: {
         getVideos: (params = {}) => `${getApiRoot()}/noiseCancellationVideo?${querystring.encode(params)}`,

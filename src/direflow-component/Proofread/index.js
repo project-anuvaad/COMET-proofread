@@ -111,12 +111,22 @@ class Proofread extends React.Component {
       }
     );
 
+    websockets.subscribeToEvent(
+      `${websockets.events.AUTOMATIC_VIDEO_BREAKING_DONE}/${this.props.videoId}`,
+      (data) => {
+        NotificationService.success("Automatic Video breaking finished");
+        setTimeout(() => {
+          window.location.reload();
+        }, 3000);
+      }
+    );
+
     this.websocketAuthIntervalId = setInterval(() => {
       websockets.emitEvent(websockets.events.AUTHENTICATE, {
         organization: this.props.organization._id,
         apiKey: this.props.apiKey,
       });
-    }, 60 * 1000);
+    }, 30 * 1000);
 
     this.props.setToEnglish(false);
   }
@@ -131,7 +141,9 @@ class Proofread extends React.Component {
       clearInterval(this.websocketAuthIntervalId);
       this.websocketAuthIntervalId = null;
     }
-
+    if (this.websocketConnection) {
+      websockets.disconnectConnection()
+    }
     this.props.resetState();
   }
 
@@ -590,7 +602,8 @@ class Proofread extends React.Component {
     );
   };
   onAutomatedVideoBreaking = () => {
-    this.props.automaticallyBreakArticle(this.props.article._id);
+    // this.props.automaticallyBreakArticle(this.props.article._id);
+    this.props.automaticallyBreakVideo(this.props.video._id)
   };
 
   renderAutomatedVideoBreakingModal = () => (
@@ -1067,7 +1080,6 @@ class Proofread extends React.Component {
                     size="large"
                     basic
                     circular
-                    color="white"
                     className="navigation-btns"
                   >
                     <Icon name={"arrow left"} /> Back to videos
@@ -1084,6 +1096,20 @@ class Proofread extends React.Component {
                     <div
                       style={{ display: "flex", justifyContent: "flex-end" }}
                     >
+                      {this.props.video && this.props.video.status === 'cutting' && (
+                        <Button
+                          color="green"
+                          size="small"
+                          circular
+                          onClick={() =>
+                            this.setState({
+                              isAutomatedVideoBreakingModalOpen: true,
+                            })
+                          }
+                        >
+                         <Icon name="cut" /> Automatic Break
+                        </Button>
+                      )}
                       {!this.canMarkAsDone() && this.canSaveAndComplete() && (
                         <Button
                           color="blue"
@@ -1224,7 +1250,14 @@ class Proofread extends React.Component {
             </Grid.Column>
           </Grid.Row>
 
-          <Grid.Row>
+          {this.props.video && this.props.video.status === 'automated_cutting' ? (
+            <Grid.Row>
+              <Grid.Column width={16}>
+                {this.renderAutomatedBreakingLoader()}
+              </Grid.Column>
+            </Grid.Row>
+          ) : (
+            <Grid.Row>
             <Grid.Column width={8}>
               <div style={{ width: "100%", overflow: "hidden" }}>
                 {this.props.video && (
@@ -1571,7 +1604,9 @@ class Proofread extends React.Component {
               )}
             </Grid.Column>
           </Grid.Row>
-        </Grid>
+     
+          )}
+          </Grid>
         <FindAndReplaceModal
           mountNode={document.getElementsByClassName("proofreading")[0]}
           open={this.state.isFindAndReplaceModalVisible}
@@ -1693,6 +1728,27 @@ class Proofread extends React.Component {
     return <Lottie options={defaultOptions} height={400} width={400} />;
   };
 
+  renderAutomatedBreakingLoader = () => {
+    const defaultOptions = {
+      loop: true,
+      autoplay: true,
+      animationData: robotLottie,
+      rendererSettings: {
+        preserveAspectRatio: "xMidYMid slice",
+      },
+    };
+    return (
+      <div style={{ textAlign: 'center' }}>
+        <div>
+          <Lottie options={defaultOptions} height={200} width={200} />
+        </div>
+        <h4>
+          Automatically breaking your video, please wait...
+        </h4>
+      </div>
+    );
+  }
+
   render() {
     if (!this.props.user || !this.props.organization) return null;
     return (
@@ -1764,6 +1820,8 @@ const mapDispatchToProps = (dispatch) => ({
     dispatch(actions.setTranscriptionVersionForAllSubslides(params)),
   automaticallyBreakArticle: (articleId) =>
     dispatch(actions.automaticallyBreakArticle(articleId)),
+  automaticallyBreakVideo: (videoId) =>
+    dispatch(actions.automaticallyBreakVideo(videoId)),
   subscribeToAITranscribeFinish: (articleId) =>
     dispatch(actions.subscribeToAITranscribeFinish(articleId)),
 
