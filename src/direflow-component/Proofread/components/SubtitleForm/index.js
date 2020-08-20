@@ -98,7 +98,7 @@ export default class SubtitleForm extends React.Component {
                         </div>
                     </Card.Header>
                     <div
-                        style={{ margin: 0, padding: 0, position: 'relative' }}
+                        style={{ margin: 0, padding: 0, paddingBottom: '2rem', position: 'relative' }}
                     >
                         <Popup
                             trigger={
