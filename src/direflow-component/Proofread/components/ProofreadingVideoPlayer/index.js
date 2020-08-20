@@ -96,7 +96,9 @@ export default class ProofreadingVideoPlayerV2 extends React.Component {
                                 {formatTime(this.props.duration)}
                             </span>
                         </div>
-                        <div>
+                        <div
+                            style={{ position: 'absolute', left: '45%' }}
+                        >
                             <Icon
                                 circular
                                 className="play-icon"
