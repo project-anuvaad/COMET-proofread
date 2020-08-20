@@ -1,11 +1,12 @@
 import React from 'react';
 import { formatTime } from '../../utils/helpers';
-import { Button, Progress, Icon } from 'semantic-ui-react';
+import { Button, Progress, Icon, Loader } from 'semantic-ui-react';
 // import styles from './style.scss';
 
 export default class ProofreadingVideoPlayerV2 extends React.Component {
     state = {
         controlsVisible: false,
+        buffering: false,
     }
 
     onProgressClick = (e) => {
@@ -24,6 +25,7 @@ export default class ProofreadingVideoPlayerV2 extends React.Component {
                         onMouseOver={() => this.setState({ controlsVisible: true })}
                         onMouseLeave={() => this.setState({ controlsVisible: false })}
                     >
+                        <Loader size="large" active={this.state.buffering} ></Loader>
                         <video
                             width={'100%'}
                             style={{ maxWidth: '100%', margin: '0 auto', display: 'block' }}
@@ -33,6 +35,12 @@ export default class ProofreadingVideoPlayerV2 extends React.Component {
                             autoPlay={this.props.playing}
                             ref={(ref) => this.props.videoRef(ref)}
                             onLoadedData={this.props.onVideoLoad}
+                            onWaiting={() => {
+                                this.setState({ buffering: true });
+                            }}
+                            onPlaying={() => {
+                                this.setState({ buffering: false });
+                            }}
                         />
 
                         {this.props.audio && (
