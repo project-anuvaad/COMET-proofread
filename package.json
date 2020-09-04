@@ -1,7 +1,7 @@
 {
   "name": "@videowiki/vw-proofread",
   "description": "This project is created using Direflow",
-  "version": "3.5.1",
+  "version": "3.5.2",
   "scripts": {
     "start": "react-app-rewired start",
     "build": "react-app-rewired build",
@@ -17,7 +17,7 @@
     "query-string": "^6.11.0",
     "react-lottie": "^1.2.3",
     "react-notifications": "^1.5.0-beta.0",
-    "react-scripts": "3.2.0",
+    "react-scripts": "^3.4.3",
     "react-switch": "^5.0.1",
     "socket.io-client": "^2.3.0",
     "superagent": "^5.2.2",
