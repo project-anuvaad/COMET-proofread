@@ -10,7 +10,7 @@ export const generateConvertStages = function generateConvertStages() {
     active: false,
   },
   {
-    title: 'Step 3: Converting to a VideoWiki video',
+    title: 'Step 3: Converting the video',
     completed: false,
     active: false,
   }]

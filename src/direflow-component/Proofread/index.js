@@ -1458,7 +1458,7 @@ class Proofread extends React.Component {
               </div>
               {this.props.article && this.props.video && (
                 <div>
-                  <div style={{ position: "absolute", top: 0, right: 10 }}>
+                  {/* <div style={{ position: "absolute", top: 0, right: 10 }}>
                     <Popup
                       position="bottom left"
                       trigger={
@@ -1494,7 +1494,7 @@ class Proofread extends React.Component {
                       onClose={() => this.setState({ stageProcessOpen: false })}
                       // hoverable
                     />
-                  </div>
+                  </div> */}
                   <SlidesList
                     editable={this.isEditable()}
                     slides={this.props.subtitles}
@@ -1648,7 +1648,7 @@ class Proofread extends React.Component {
             }}
           />
         )}
-        <CuttingVideoTutorialModal
+        {/* <CuttingVideoTutorialModal
           open={this.state.isCuttingVideoTutorialModalVisible}
           onClose={() =>
             this.setState({ isCuttingVideoTutorialModalVisible: false })
@@ -1657,9 +1657,9 @@ class Proofread extends React.Component {
           onChangeShowOnStartup={(show) =>
             this.props.updateShowCuttingTutorial(show)
           }
-        />
+        /> */}
 
-        <ProofreadingVideoTutorialModal
+        {/* <ProofreadingVideoTutorialModal
           open={this.state.isProofreadingVideoTutorialModalVisible}
           showOnStartup={
             this.props.user && this.props.user.showProofreadingTutorial
@@ -1684,7 +1684,7 @@ class Proofread extends React.Component {
               });
             }
           }}
-        />
+        /> */}
         {this.renderSubscribeToAITranscribeFinishModal()}
         {this.renderAutomatedVideoBreakingModal()}
       </div>
