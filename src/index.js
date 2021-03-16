@@ -9,7 +9,7 @@ const direflowComponent = new DireflowComponent();
 
 const direflowProperties = {
   apiKey: '',
-  apiRoot: process.env.NODE_ENV === 'production' ? 'https://api.videowiki.org' : '',
+  apiRoot: process.env.NODE_ENV === 'production' ? 'https://comet.anuvaad.org' : '',
   videoId: '',
   backRoute: '',
   finishRedirectRoute: '',
@@ -28,7 +28,7 @@ const direflowPlugins = [
 ];
 
 direflowComponent.configure({
-  name: 'vw-proofread',
+  name: 'vd-proofread',
   // useShadow: true,
   properties: direflowProperties,
   plugins: direflowPlugins,

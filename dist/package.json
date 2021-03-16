@@ -1,7 +1,7 @@
 {
-  "name": "@videowiki/vw-proofread",
+  "name": "@comet-anuvaad/video-proofread",
   "description": "This project is created using Direflow",
-  "version": "3.5.2",
+  "version": "1.0.0",
   "scripts": {
     "start": "react-app-rewired start",
     "build": "react-app-rewired build",
@@ -63,5 +63,13 @@
       "last 1 safari version"
     ]
   },
-  "config-overrides-path": "direflow-webpack.js"
+  "config-overrides-path": "direflow-webpack.js",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/project-anuvaad/COMET-proofread.git"
+  },
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/project-anuvaad/COMET-proofread/issues"
+  }
 }
